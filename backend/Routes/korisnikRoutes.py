@@ -1,8 +1,12 @@
+import collections
+from typing import Collection
 from flask import request,jsonify, Blueprint
 from db_config import mongo_db
 from Models.Korisnik import Korisnik
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash,generate_password_hash
 from bson import json_util
+
+
 
 korisnik_routes = Blueprint("korisnik_routes", __name__)
 
@@ -58,3 +62,62 @@ def get_all_users():
         return jsonify(json_util.dumps(korisnici)), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+@korisnik_routes.route('/updateKorisnik', methods=['PUT']) #za menjanje sifre
+def  updateKorisnik():
+    data = request.get_json()
+    email_korisnika = data['email']
+    nova_sifra = data['nova_sifra']
+
+    Hashnova_sifra= generate_password_hash(nova_sifra)
+
+    
+    korisnik=mongo_db.users.find_one({'email': email_korisnika})
+
+    if korisnik:
+        id_korisnika = korisnik["_id"]
+
+        
+        novi_podaci = {
+            "$set": {
+                "sifra": Hashnova_sifra
+            }
+        }
+
+       
+        rezultat = mongo_db.users.update_one({"_id": id_korisnika}, novi_podaci)
+
+        if rezultat.modified_count > 0:
+            return jsonify({"status": "success", "message": "Šifra korisnika uspešno ažurirana"})
+        else:
+            return jsonify({"status": "error", "message": "Nema promena u šifri"})
+    else:
+        return jsonify({"status": "error", "message": "Korisnik sa datim emailom nije pronađen"})
+
+
+
+
+@korisnik_routes.route('/deleteKorisnik', methods=['DELETE'])
+def obrisiKorisnika():
+    data = request.get_json()
+    emailKorisnika = data['email']
+    
+   
+    korisnik = mongo_db.users.find_one({"email": emailKorisnika})
+
+    if korisnik:
+        
+        id_korisnika = korisnik["_id"]
+
+        
+        rezultat = mongo_db.users.delete_one({"_id": id_korisnika})
+
+        if rezultat.deleted_count > 0:
+            return jsonify({"status": "success", "message": "Korisnik uspešno obrisan"})
+        else:
+            return jsonify({"status": "error", "message": "Nema promena, korisnik nije obrisan"})
+    else:
+        return jsonify({"status": "error", "message": "Korisnik sa datim emailom nije pronađen"})
+
+
