@@ -1,0 +1,7 @@
+ENTITETI
+Korisnika(dodaj korisnika-register, find -logovanje, brisanje, azuriranje)-
+ime, prezime, datum rodjenja,email
+Recept(dodaj recept-korisnik postavlja, brisi recept, azuriraj, vrati recepte)
+naziv, sastojke, opis pripreme,
+Sastojak- ime, gramaza, nutritivna vrednost,
+Nutritivna vrednost- proteini, masti, ugljeni hidrati , kalorije
