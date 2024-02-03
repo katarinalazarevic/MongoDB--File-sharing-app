@@ -72,3 +72,43 @@ def ProcitajDecuFolder():
         }
 
     return jsonify( rezultat)
+
+@folder_routes.route("/ObrisiFolder/<naziv_foldera>", methods=['DELETE'])
+def ObrisiFolder(naziv_foldera):
+    try:
+        playlist = mongo_db.foldersf.find_one({'naziv': naziv_foldera})
+        if not playlist:
+            return jsonify({'message': 'Folder ne postoji'}), 404
+
+        # Brisanje same playliste
+        mongo_db.playlists.delete_one({'naziv': naziv_foldera})
+
+        return jsonify({'message': 'Folder uspešno obrisan'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@folder_routes.route("/IzmeniFolder", methods=['PUT'])
+def IzmeniFolder():
+    try:
+        data = request.get_json()
+
+        trenutno_ime = data.get('trenutno_ime')
+        novo_ime = data.get('novo_ime')
+
+        if not trenutno_ime or not novo_ime:
+            return jsonify({'error': 'Potrebno je proslediti trenutno i novo ime'}), 400
+
+        folder = mongo_db.foldersf.find_one({'naziv': trenutno_ime})
+        if not folder:
+            return jsonify({'message': 'Folder ne postoji'}), 404
+        novifolder = mongo_db.foldersf.find_one({'naziv': novo_ime})
+        if  novifolder:
+            return jsonify({'message': 'Folder sa datim nazivom vec postoji'}), 404
+
+        mongo_db.foldersf.update_one({'_id': folder['_id']}, {'$set': {'naziv': novo_ime}})
+
+        return jsonify({'message': 'Playlista uspešno izmenjena'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

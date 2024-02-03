@@ -28,14 +28,4 @@ class Image:
             'datumPostavljanja': self.datumPostavljanja
         }
 
-    # @staticmethod
-    # def find_by_id(image_id):
-    #     image_collection = mongo.db.images
-    #     image_data = image_collection.find_one({'_id': ObjectId(image_id)})
-    #     return Image.from_dict(image_data) if image_data else None
-
-    # @staticmethod
-    # def save_to_db(image):
-    #     image_collection = mongo.db.images
-    #     result = image_collection.insert_one(image.to_dict())
-    #     return str(result.inserted_id)
+   
