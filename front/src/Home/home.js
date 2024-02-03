@@ -1,28 +1,94 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+import React, { useState } from 'react';
+import {
+  Box,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  Typography,
+  Drawer,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import FolderIcon from '@mui/icons-material/Folder';
+import axios from 'axios';
 
-const drawerWidth = 240;
+const DrawerComponent = () => {
 
-export default function Home() {
+  
+  const drawerWidth = 240;
+  const [openFolders, setOpenFolders] = useState([]);
+  
+  const ulogovaniKorisnik = localStorage.getItem('username');
+  const [userChildren, setUserChildren] = useState([]);
 
 
-  const handleTrashClick = (clickedLabel) => {
-    console.log(`Clicked on: ${clickedLabel}`);
-    // Dodatna logika koja se izvršava nakon klika
+  const procitajMojuDecu = async (folder) => {
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:5000/ProcitajDecuFolder',
+        {
+          naziv: folder,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            // Dodajte dodatne zaglavlja ovde ako je potrebno
+            // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
+          },
+        }
+      );
+  
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = response.data;
+      setUserChildren(data.subfolders);
+    } catch (error) {
+      console.error('Greška prilikom dohvatanja podfoldera', error);
+    }
   };
+  
+  
+
+
+  const handleTrashClick = async (folder) => {
+    if (openFolders.includes(folder)) {
+      setOpenFolders(openFolders.filter(openFolder => openFolder !== folder));
+    } else {
+      setOpenFolders([...openFolders, folder]);
+  
+      // Pozivamo procitajMojuDecu i postavljamo podfoldere
+      await procitajMojuDecu(folder);
+    }
+  };
+  
+
+  const renderSubfolders = (subfolders) => {
+    return (
+      <List>
+        {subfolders.map((subfolder, index) => (
+          <ListItem key={`${index}-${subfolder}`} disablePadding>
+            <ListItemButton onClick={() => handleTrashClick(subfolder)}>
+              <ListItemIcon>
+                <FolderIcon />
+              </ListItemIcon>
+              <ListItemText primary={subfolder} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    );
+  };
+  
+  
+  
   
 
   return (
@@ -42,7 +108,7 @@ export default function Home() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: 'border-box',
           },
@@ -55,7 +121,7 @@ export default function Home() {
         <List>
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick={handleTrashClick}>
+              <ListItemButton onClick={() => handleTrashClick(text)}>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
@@ -66,18 +132,37 @@ export default function Home() {
         </List>
         <Divider />
         <List>
-  {['All mail', 'Trash', 'Spam'].map((text, index) => (
-    <ListItem key={text} disablePadding>
-      <ListItemButton onClick={() => handleTrashClick(text)}>
+        <ListItem disablePadding>
+  <ListItemButton onClick={() => handleTrashClick(ulogovaniKorisnik)}>
+    <ListItemIcon>
+      <FolderIcon />
+    </ListItemIcon>
+    <ListItemText primary={ulogovaniKorisnik} />
+    {openFolders.includes(ulogovaniKorisnik) && (
+      <>
+        {userChildren.length === 0 ? (
+          <p>No subfolders found.</p>
+        ) : (
+          <List>
+  {userChildren.map((subfolder) => (
+    <ListItem key={subfolder.naziv} disablePadding>
+      <ListItemButton onClick={() => handleTrashClick(subfolder.naziv)}>
         <ListItemIcon>
-          {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+          <FolderIcon />
         </ListItemIcon>
-        <ListItemText primary={text} />
+        <ListItemText primary={subfolder.naziv} />
+        {openFolders.includes(subfolder.naziv) && renderSubfolders(subfolder.podfoldere)}
       </ListItemButton>
     </ListItem>
   ))}
 </List>
 
+        )}
+      </>
+    )}
+  </ListItemButton>
+</ListItem>
+        </List>
       </Drawer>
       <Box
         component="main"
@@ -87,4 +172,6 @@ export default function Home() {
       </Box>
     </Box>
   );
-}
+};
+
+export default DrawerComponent;

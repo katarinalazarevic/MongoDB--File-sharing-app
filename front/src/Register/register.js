@@ -13,6 +13,61 @@ const  Register = () =>
   const [datum,setDatum]= useState("");
 
 
+  const napraviDefaultFolder = async  (email)=>
+  {
+    try{
+      const response= await axios.post(
+        "http://127.0.0.1:5000/NapraviFolder",
+        {
+          roditelj:"#",
+          naziv: email,
+          vlasnik:email
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // Dodajte dodatne zaglavlja ako su potrebna (npr. autorizacija)
+          },
+        }
+        
+      );
+      console.log(response);
+
+      if (response.status === 201) {
+        if (response.data.message === "SUCCESS") {
+          console.log("Poruka o uspešnoj prijavi:", response.data.message);
+
+          
+
+
+
+          navigate("/");
+          return response.data;
+        } else {
+          console.log(
+            "Neuspešna prijava! Status kod 200, ali prijava neuspešna."
+          );
+          window.confirm("Neuspešna prijava!");
+         
+        }
+      } else {
+        console.log("Neuspešna prijava! Status kod nije 200.");
+        window.confirm("Neuspešna prijava!");
+       
+      }
+
+
+    }
+    catch (error) {
+      // Uhvatite i obradite grešku ako se desi, ovo se odnosi na greške koje nisu vezane za statusni kod odgovora (npr. problem sa mrežom, itd.)
+      console.error("Došlo je do greške prilikom pravljenja foldera:", error);
+      window.confirm("Došlo je do greške prilikom pravljenja foldera!");
+    
+    }
+
+  };
+
+
   const RegisterHandler= async (event)=>
   {
     event.preventDefault();
@@ -41,6 +96,11 @@ const  Register = () =>
       if (response.status === 201) {
         if (response.data.message === "SUCCESS") {
           console.log("Poruka o uspešnoj prijavi:", response.data.message);
+
+          
+          napraviDefaultFolder(email);
+
+
           navigate("/");
           return response.data;
         } else {

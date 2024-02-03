@@ -28,17 +28,21 @@ def NapraviFolder():
             "subfolders": [subfolder for subfolder in noviFolder.subfolders]
        
         })
-        
-        rfolder=mongo_db.foldersf.find_one({'naziv':roditelj})
-        if rfolder:
-            mongo_db.foldersf.update_one(
-                {'naziv': roditelj},
-                {'$push': {'subfolders': noviFolder.naziv}}
-            )
+        if roditelj == '#':
+    # Ovdje ide kod koji se izvršava ako je roditelj "#"
+         return jsonify({'message': 'SUCCESS'}), 201
+        else: 
+            # Ovdje ide kod koji se izvršava ako roditelj nije "#"
+            rfolder = mongo_db.foldersf.find_one({'naziv': roditelj})
+            if rfolder:
+                mongo_db.foldersf.update_one(
+                    {'naziv': roditelj},
+                    {'$push': {'subfolders': noviFolder.naziv}}
+                )
+                return jsonify({'message': 'SUCCESS'}), 201
+            else:
+                return jsonify({'message': 'Doslo je do greske sa roditeljskim folderom'}), 400
 
-            return jsonify({'message': 'SUCCESS'}), 201
-
-        return jsonify({'message': 'Doslo je do greske sa roditeljskim folderom'}), 400
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
