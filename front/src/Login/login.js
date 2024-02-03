@@ -48,7 +48,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/login",
+        "http://127.0.0.1:5000/Login",
         {
           email: emailValue,
           sifra: passwordValue,
@@ -63,11 +63,11 @@ const Login = () => {
       console.log(response);
 
       if (response.status === 200) {
-        if (response.data.message === "SUCCESS") {
+        if (response.data.message === "Login successful") {
           console.log("Poruka o uspešnoj prijavi:", response.data.message);
           localStorage.setItem("username", emailValue);
-          localStorage.setItem("ime", response.data.korisnik.ime);
-          localStorage.setItem("prezime", response.data.korisnik.prezime);
+          // localStorage.setItem("ime", response.data.korisnik.ime);
+          // localStorage.setItem("prezime", response.data.korisnik.prezime);
 
           return navigate("/Home");
         } else {

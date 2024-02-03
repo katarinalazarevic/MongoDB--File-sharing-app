@@ -47,11 +47,11 @@ const ZaboravljenaSifra = () => {
     setPassword(passwordValue);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/login",
+      const response = await axios.put(
+        "http://127.0.0.1:5000/updateKorisnik",
         {
           email: emailValue,
-          sifra: passwordValue,
+          nova_sifra: passwordValue,
         },
         {
           headers: {
@@ -62,14 +62,12 @@ const ZaboravljenaSifra = () => {
 
       console.log(response);
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         if (response.data.message === "SUCCESS") {
           console.log("Poruka o uspešnoj prijavi:", response.data.message);
-          localStorage.setItem("username", emailValue);
-          localStorage.setItem("ime", response.data.korisnik.ime);
-          localStorage.setItem("prezime", response.data.korisnik.prezime);
+         
 
-          return navigate("/Home");
+          return navigate("/");
         } else {
           console.log(
             "Neuspešna prijava! Status kod 200, ali prijava neuspešna."

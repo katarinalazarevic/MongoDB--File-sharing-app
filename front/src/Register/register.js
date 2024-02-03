@@ -19,12 +19,12 @@ const  Register = () =>
     console.log(ime,prezime,email,password,datum);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/register",
+        "http://127.0.0.1:5000/Register",
         {
           ime:ime,
           prezime:prezime,
           email: email,
-          datum_rodjenja:datum,
+        
           sifra: password,
           //datum_rodjenja
         },

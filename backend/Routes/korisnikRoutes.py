@@ -89,7 +89,7 @@ def  updateKorisnik():
         rezultat = mongo_db.users.update_one({"_id": id_korisnika}, novi_podaci)
 
         if rezultat.modified_count > 0:
-            return jsonify({"status": "success", "message": "Šifra korisnika uspešno ažurirana"})
+             return jsonify({'message': 'SUCCESS'}), 201
         else:
             return jsonify({"status": "error", "message": "Nema promena u šifri"})
     else:

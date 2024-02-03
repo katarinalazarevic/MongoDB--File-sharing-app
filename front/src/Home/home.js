@@ -19,10 +19,11 @@ const drawerWidth = 240;
 export default function Home() {
 
 
-  const handleTrashClick = () => {
-    console.log('Pritisnuto na Trash!');
-    // Dodajte ovde logiku koja treba da se izvrši kada se pritisne na Trash
+  const handleTrashClick = (clickedLabel) => {
+    console.log(`Clicked on: ${clickedLabel}`);
+    // Dodatna logika koja se izvršava nakon klika
   };
+  
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -65,17 +66,18 @@ export default function Home() {
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={handleTrashClick}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+  {['All mail', 'Trash', 'Spam'].map((text, index) => (
+    <ListItem key={text} disablePadding>
+      <ListItemButton onClick={() => handleTrashClick(text)}>
+        <ListItemIcon>
+          {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+        </ListItemIcon>
+        <ListItemText primary={text} />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
+
       </Drawer>
       <Box
         component="main"
