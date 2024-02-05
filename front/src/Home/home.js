@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   CssBaseline,
@@ -12,87 +12,85 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-} from '@mui/material';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import FolderIcon from '@mui/icons-material/Folder';
-import axios from 'axios';
+} from "@mui/material";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import FolderIcon from "@mui/icons-material/Folder";
+import axios from "axios";
+import { DropDown } from "../dropdown/dropdown";
+import DropMenu from '../dropdown/dropdown';
+
 
 const DrawerComponent = () => {
-
-  
   const drawerWidth = 240;
   const [openFolders, setOpenFolders] = useState([]);
-  
-  const ulogovaniKorisnik = localStorage.getItem('username');
+
+  const ulogovaniKorisnik = localStorage.getItem("username");
   const [userChildren, setUserChildren] = useState([]);
 
-
   const procitajMojuDecu = async (folder) => {
+    console.log(folder);
     try {
       const response = await axios.post(
-        'http://127.0.0.1:5000/ProcitajDecuFolder',
+        "http://127.0.0.1:5000/ProcitajDecuFolder",
         {
           naziv: folder,
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             // Dodajte dodatne zaglavlja ovde ako je potrebno
             // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
           },
         }
       );
-  
+
       if (response.status !== 200) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = response.data;
-      setUserChildren(data.subfolders);
+      return data.subfolders;
+
+    
     } catch (error) {
-      console.error('Greška prilikom dohvatanja podfoldera', error);
+      console.error("Greška prilikom dohvatanja podfoldera", error);
     }
   };
-  
-  
-
 
   const handleTrashClick = async (folder) => {
     if (openFolders.includes(folder)) {
-      setOpenFolders(openFolders.filter(openFolder => openFolder !== folder));
+      setOpenFolders(openFolders.filter((openFolder) => openFolder !== folder));
     } else {
       setOpenFolders([...openFolders, folder]);
-  
+
+      console.log("openFolders:", openFolders);
+    console.log("userChildren:", userChildren);
+
       // Pozivamo procitajMojuDecu i postavljamo podfoldere
       await procitajMojuDecu(folder);
     }
   };
-  
 
   const renderSubfolders = (subfolders) => {
     return (
       <List>
-        {subfolders.map((subfolder, index) => (
-          <ListItem key={`${index}-${subfolder}`} disablePadding>
-            <ListItemButton onClick={() => handleTrashClick(subfolder)}>
+        {subfolders.map((subfolder) => (
+          <ListItem key={subfolder.naziv} disablePadding>
+            <ListItemButton onClick={() => handleTrashClick(subfolder.naziv)}>
               <ListItemIcon>
                 <FolderIcon />
               </ListItemIcon>
-              <ListItemText primary={subfolder} />
+              <ListItemText primary={subfolder.naziv} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
     );
   };
-  
-  
-  
-  
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -110,7 +108,7 @@ const DrawerComponent = () => {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            boxSizing: 'border-box',
+            boxSizing: "border-box",
           },
         }}
         variant="permanent"
@@ -119,7 +117,7 @@ const DrawerComponent = () => {
         <Toolbar />
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={() => handleTrashClick(text)}>
                 <ListItemIcon>
@@ -129,44 +127,51 @@ const DrawerComponent = () => {
               </ListItemButton>
             </ListItem>
           ))}
+          
         </List>
         <Divider />
         <List>
         <ListItem disablePadding>
-  <ListItemButton onClick={() => handleTrashClick(ulogovaniKorisnik)}>
+        <DropMenu procitajMojuDecu={procitajMojuDecu}   nazivFoldera={ulogovaniKorisnik} />
+  {/* <ListItemButton onClick={() => handleTrashClick(ulogovaniKorisnik)}>
+          <DropMenu procitajMojuDecu={procitajMojuDecu}   nazivFoldera={ulogovaniKorisnik} />
     <ListItemIcon>
       <FolderIcon />
     </ListItemIcon>
     <ListItemText primary={ulogovaniKorisnik} />
     {openFolders.includes(ulogovaniKorisnik) && (
       <>
+        {console.log("Open folder:", ulogovaniKorisnik)}
         {userChildren.length === 0 ? (
           <p>No subfolders found.</p>
         ) : (
           <List>
-  {userChildren.map((subfolder) => (
-    <ListItem key={subfolder.naziv} disablePadding>
-      <ListItemButton onClick={() => handleTrashClick(subfolder.naziv)}>
-        <ListItemIcon>
-          <FolderIcon />
-        </ListItemIcon>
-        <ListItemText primary={subfolder.naziv} />
-        {openFolders.includes(subfolder.naziv) && renderSubfolders(subfolder.podfoldere)}
-      </ListItemButton>
-    </ListItem>
-  ))}
-</List>
-
+            {userChildren.map((subfolder) => (
+              <ListItem key={subfolder.naziv} disablePadding>
+                <ListItemButton
+                  onClick={() => handleTrashClick(subfolder.naziv)}
+                >
+                  <ListItemIcon>
+                    <FolderIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={subfolder.naziv} />
+                  {openFolders.includes(subfolder.naziv) &&
+                    renderSubfolders(subfolder.podfoldere)}
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
         )}
       </>
     )}
-  </ListItemButton>
-</ListItem>
+  </ListItemButton> */}
+</ListItem> 
+
         </List>
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
+        sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
       >
         <Toolbar />
       </Box>
