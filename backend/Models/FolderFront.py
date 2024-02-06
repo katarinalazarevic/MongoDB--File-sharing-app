@@ -1,18 +1,16 @@
 from datetime import datetime
 
 class Folder:
-    def __init__(self, naziv, vlasnik):
+    def __init__(self, naziv, roditelj):
         self.naziv = naziv
-        self.vlasnik = vlasnik
+        self.roditelj = roditelj
         self.datumKreiranja = datetime.utcnow()
         self.files = []
-        self.subfolders = []
     
     def to_dict(self):
         return {
             "naziv": self.naziv,
-            "vlasnik": self.vlasnik,
+            "roditelj": self.roditelj,
             "datumKreiranja": self.datumKreiranja,
-            "files": [file for file in self.files],
-            "subfolders": [subfolder for subfolder in self.subfolders]
+            "files": [file for file in self.files]
         }

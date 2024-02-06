@@ -15,10 +15,12 @@ def register_blueprint():
     from Routes.folderFRputes import folder_routes
     from Routes.slikaRoutes import slika_routes
     from Routes.playlistRoutes import playlist_routes
+    from Routes.pesmaRoutes import pesma_routes
     app.register_blueprint(korisnik_routes)
     app.register_blueprint(folder_routes)
     app.register_blueprint(slika_routes)
     app.register_blueprint(playlist_routes)
+    app.register_blueprint(pesma_routes)
 
 register_blueprint()
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import datetime
 from db_config import mongo_db
 from Models.FolderFront import Folder
 from flask import request,jsonify, Blueprint
@@ -15,12 +16,14 @@ def NapraviFolder():
         print(postojeci)
         if not postojeci:
             return jsonify({'message': 'Folder roditelj ne postoji'}), 400
+       
+        noviFolder=Folder(naziv,roditelj)
+
         mongo_db.foldersf.insert_one({
             'naziv': naziv,
             "roditelj": postojeci.get('naziv'),
-            # "datumKreiranja": noviFolder.datumKreiranja,
-            # "files": [file for file in noviFolder.files],
-            # "subfolders": [subfolder for subfolder in noviFolder.subfolders]
+            "datumKreiranja": datetime.utcnow(),
+            "files": [file for file in noviFolder.files],
         })
         return jsonify({'message': 'SUCCESS'}), 201
         
@@ -70,7 +73,7 @@ def proba(naziv):
     x = mongo_db.foldersf.find_one({ 'naziv': naziv })
 
     if not x:
-        return None  # Dodajte odgovarajući tretman kada ne postoji dokument sa datim nazivom
+        return None  
 
     p = {
         'naziv': x.get('naziv', ''),
@@ -126,18 +129,6 @@ def ProcitajSveFoldere():
 
     return jsonify({'folders': rezultat})
 
-@folder_routes.route("/ProcitajDecuFolder", methods=['POST'])
-def ProcitajDecuFolder():
-    data=request.get_json()
-    naziv=data['naziv']
-    folder = mongo_db.foldersf.find_one({"naziv":naziv})
-
-    rezultat = {
-            'naziv': folder['naziv'],
-            'subfolders': folder.get('subfolders', [])
-        }
-
-    return jsonify( rezultat)
 
 @folder_routes.route("/ObrisiFolder/<naziv_foldera>", methods=['DELETE'])
 def ObrisiFolder(naziv_foldera):
