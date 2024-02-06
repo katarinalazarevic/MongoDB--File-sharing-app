@@ -9,7 +9,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { TreeView } from "@mui/x-tree-view/TreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 
-const DropDown = ({ procitajMojuDecu, nazivFoldera }) => {
+const DropDown = ({ procitajMojuDecu, nazivFoldera ,pronadjiImeRoditelja}) => {
   const ucitaniKorisnik=localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
   const [selected, setSelected] = React.useState(0);
@@ -46,6 +46,8 @@ const DropDown = ({ procitajMojuDecu, nazivFoldera }) => {
 
   const handleSelect = (event, nodeId) => {
     setSelected(nodeId);
+    //createFolderHandler(nodeId);
+    pronadjiImeRoditelja(nodeId);
     console.log(nodeId);
   };
 

@@ -16,26 +16,30 @@ def allowed_file(filename):
 
 @slika_routes.route("/UploadSliku",methods=['POST'])
 def UploadSliku():
+    folder=request.form.get('folder')
+    print("vrednosti su ", folder)
     email = request.form.get('email')
     if not email:
         return jsonify({'error': 'No email provided'}), 400
-    
+    print(email)
     folder=request.form.get('folder')
     if not folder:
         return jsonify({'error': 'No folder provided'}), 400
-
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-   
+    print(folder)
+    
+    # if 'file' not in request.files:
+    #     return jsonify({'error': 'No file part'}), 400
+    
     vlasnikl = mongo_db.users.find_one({'email':email})
     folderl= mongo_db.foldersf.find_one({'naziv':folder}) 
+    print("Pronadjieni i vlasnik i folder")
     if not vlasnikl:
         return jsonify({'message': 'Nepostojeci email'}), 400
     if not folderl:
         return jsonify({'message': 'Nepostojeci folder'}), 400
     
-    file = request.files['file']
-
+    file = request.files.get('file')
+    print(file)
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
     if file and allowed_file(file.filename):
@@ -58,7 +62,7 @@ def UploadSliku():
                 {'$push': {'files': image.sadrzaj}}
             )
 
-        return jsonify({'message': 'Image uploaded successfully'})
+        return jsonify({'message': 'Image uploaded successfully'}),201
     else:
         return jsonify({'error': 'Invalid file type'}), 400
 
