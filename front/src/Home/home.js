@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   CssBaseline,
@@ -21,26 +21,34 @@ import axios from "axios";
 import { DropDown } from "../dropdown/dropdown";
 import DropMenu from "../dropdown/dropdown";
 import FormDialog from "../Dialog/dialog";
-import ImageUploading from 'react-images-uploading';
+import ImageUploading from "react-images-uploading";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { App1 } from "../UploadFolder/upload";
-import PlayListDialog from "../api/PlayListaDialog/PlayListaDialog";
+import PlayListDialog from "../PlayListaDialog/PlayListaDialog";
+import DropDownPlaylist from "../dropdownPlaylist/dropdownplaylist";
+import YouTube from "react-youtube";
+import   './home.css'
+
 
 const DrawerComponent = () => {
   const drawerWidth = 240;
   const [openFolders, setOpenFolders] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [ImeRoditelja, setImeRoditelja] = React.useState("");
-  const [file,setFileName]= React.useState('');
+  const [file, setFileName] = React.useState({ name: "pufla" });
+  const [nazivPlayliste1, setnazivPlayliste] = React.useState("");
 
   const ulogovaniKorisnik = localStorage.getItem("username");
   const [userChildren, setUserChildren] = useState([]);
+  const [urlAdresa, seturlAdresa]= useState('');
+  const [prikaziVideo, setprikaziVideo]= useState(false);
+  const [sadrzajFoldera,setSadrzajFodlera]= useState([]);
 
   const createFolderHandler = async (imeDeteta) => {
     console.log(imeDeteta);
@@ -48,31 +56,107 @@ const DrawerComponent = () => {
     napraviFolder(ImeRoditelja, imeDeteta);
   };
 
-  const openDialogHandler= ()=>
-  {
+  const createPlaylistHandler = async (nazivPlayliste) => {
+    console.log(nazivPlayliste);
+
+    kreirajPlayListu(nazivPlayliste1);
+  };
+
+  const kreirajPlayListu = async (nazivPlayliste) => {
+    console.log("usli smo u platlist fju ");
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:5000/NapraviPlaylistu",
+        {
+          vlasnik: ulogovaniKorisnik,
+          naziv: nazivPlayliste,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Server Response:", response.data);
+
+      if (response.status === 201) {
+        if (response.data.message === "SUCCESS") {
+          console.log("Uspesno dodata playlista:", response.data.message);
+        } else {
+          console.log("Neuspesno dodat folder:", response.data.message);
+          // Možete dodati dodatnu logiku za neuspeh, na primer, prikazivanje poruke korisniku
+        }
+      } else {
+        console.log("Neuspešna prijava! Status kod nije 201.");
+        // Možete dodati dodatnu logiku za neuspeh, na primer, prikazivanje poruke korisniku
+      }
+    } catch (error) {
+      console.error("Greška prilikom dohvatanja podfoldera", error);
+      // Možete dodati dodatnu logiku za grešku, na primer, prikazivanje poruke korisniku
+    }
+  };
+
+  const openDialogHandler = () => {
     setOpen(!open);
   };
 
   const handleFileChange = (event) => {
     console.log(event.target.files[0].name);
-    setFileName(event.target.files[0].name);
-   // const files = event.target.files;
-   // setSelectedFiles(files);
+    setFileName(event.target.files[0]);
+    // const files = event.target.files;
+    // setSelectedFiles(files);
   };
+
+  useEffect(() => {
+    // Implementirajte logiku koja će se izvršiti svaki put kada se promeni urlAdresa
+    console.log("Promenjena je vrednost urlAdresa:", urlAdresa);
+    console.log("Usao sam u useeffect")
+    //nizSlika.push(novaSlika)
+    //setNizSlika(nizSlika) //ovo ne radi 
+   // setNizSlika([...nizSlika, novataSlikata])  ovo je 
+    //nizSlika = [...nizSlika, novataSlikata]
+  }, [urlAdresa]);
+
+
+  const vratiSadrzajFoldera = async (imeFoldera) => {
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/vratiSadrzajFoldera", {
+        naziv: imeFoldera
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log("Dobijen sadržaj foldera", response.data);
+        setSadrzajFodlera(response.data.files);
+      } else {
+        console.log("Neuspešna prijava! Status kod nije 200.");
+        // Dodatna logika za neuspeh, npr. prikazivanje poruke korisniku
+      }
+    } catch (error) {
+      console.error("Greška", error);
+      // Dodatna logika za neuspeh, npr. prikazivanje poruke korisniku
+    }
+  };
+  
+
 
   const uploadFileHandler = async () => {
     try {
-      console.log('Ulogovani korisnik:', ulogovaniKorisnik);
-      console.log('Ime roditelja:', ImeRoditelja);
-      console.log('File:', file);
-  
+      console.log("Ulogovani korisnik:", ulogovaniKorisnik);
+      console.log("Ime roditelja:", ImeRoditelja);
+      console.log("File:", file);
+
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('email', ulogovaniKorisnik);
-      formData.append('folder', ImeRoditelja);
-  
-      console.log('FormData:', formData);
-  
+      formData.append("file", file, file.name);
+      formData.append("email", ulogovaniKorisnik);
+      formData.append("folder", ImeRoditelja);
+
+      console.log("FormData:", formData);
+
       const response = await axios.post(
         "http://127.0.0.1:5000/UploadSliku",
         formData,
@@ -80,12 +164,11 @@ const DrawerComponent = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          mode:"no-cors"
         }
       );
-  
+
       console.log("Server Response:", response.data);
-  
+
       if (response.status === 201) {
         if (response.data.message === "Image uploaded successfully") {
           console.log("Uspesno dodat folder:", response.data.message);
@@ -100,10 +183,8 @@ const DrawerComponent = () => {
     } catch (error) {
       console.error("Greška prilikom dohvatanja podfoldera", error);
       // Možete dodati dodatnu logiku za grešku, na primer, prikazivanje poruke korisniku
-    }};
-  
-  
-
+    }
+  };
 
   const pronadjiImeRoditelja = async (imeRoditelja) => {
     setImeRoditelja(imeRoditelja);
@@ -197,22 +278,22 @@ const DrawerComponent = () => {
     }
   };
 
-  const renderSubfolders = (subfolders) => {
-    return (
-      <List>
-        {subfolders.map((subfolder) => (
-          <ListItem key={subfolder.naziv} disablePadding>
-            <ListItemButton onClick={() => handleTrashClick(subfolder.naziv)}>
-              <ListItemIcon>
-                <FolderIcon />
-              </ListItemIcon>
-              <ListItemText primary={subfolder.naziv} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    );
-  };
+  // const renderSubfolders = (subfolders) => {
+  //   return (
+  //     <List>
+  //       {subfolders.map((subfolder) => (
+  //         <ListItem key={subfolder.naziv} disablePadding>
+  //           <ListItemButton onClick={() => handleTrashClick(subfolder.naziv)}>
+  //             <ListItemIcon>
+  //               <FolderIcon />
+  //             </ListItemIcon>
+  //             <ListItemText primary={subfolder.naziv} />
+  //           </ListItemButton>
+  //         </ListItem>
+  //       ))}
+  //     </List>
+  //   );
+  // };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -242,18 +323,18 @@ const DrawerComponent = () => {
         <Toolbar />
         <Divider />
         <List>
-      {["Playliste"].map((text, index) => (
-        <ListItem key={text} disablePadding>
-          <ListItemButton onClick={() => handleTrashClick(text)}>
-            <ListItemIcon>
-            </ListItemIcon>
-            <ListItemText primary={text} />
-              <AddIcon   onClick={openDialogHandler}/> {/* Dodaj ovde željenu ikonicu */}
-              
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
+          {["Playliste"].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon></ListItemIcon>
+                <ListItemText primary={text} />
+                <AddIcon onClick={openDialogHandler} />{" "}
+                {/* Dodaj ovde željenu ikonicu */}
+              </ListItemButton>
+            </ListItem>
+          ))}
+          <DropDownPlaylist seturlAdresa={seturlAdresa} setprikaziVideo={setprikaziVideo} prikaziVideo={prikaziVideo}>  </DropDownPlaylist>
+        </List>
         <Divider />
         <List>
           <ListItem disablePadding>
@@ -261,39 +342,9 @@ const DrawerComponent = () => {
               procitajMojuDecu={procitajMojuDecu}
               nazivFoldera={ulogovaniKorisnik}
               pronadjiImeRoditelja={pronadjiImeRoditelja}
+              vratiSadrzajFoldera={vratiSadrzajFoldera}
             />
-            {/* <ListItemButton onClick={() => handleTrashClick(ulogovaniKorisnik)}>
-          <DropMenu procitajMojuDecu={procitajMojuDecu}   nazivFoldera={ulogovaniKorisnik} />
-    <ListItemIcon>
-      <FolderIcon />
-    </ListItemIcon>
-    <ListItemText primary={ulogovaniKorisnik} />
-    {openFolders.includes(ulogovaniKorisnik) && (
-      <>
-        {console.log("Open folder:", ulogovaniKorisnik)}
-        {userChildren.length === 0 ? (
-          <p>No subfolders found.</p>
-        ) : (
-          <List>
-            {userChildren.map((subfolder) => (
-              <ListItem key={subfolder.naziv} disablePadding>
-                <ListItemButton
-                  onClick={() => handleTrashClick(subfolder.naziv)}
-                >
-                  <ListItemIcon>
-                    <FolderIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={subfolder.naziv} />
-                  {openFolders.includes(subfolder.naziv) &&
-                    renderSubfolders(subfolder.podfoldere)}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        )}
-      </>
-    )}
-  </ListItemButton> */}
+           
           </ListItem>
         </List>
       </Drawer>
@@ -306,17 +357,66 @@ const DrawerComponent = () => {
           <Button variant="contained" onClick={uploadFileHandler}>
             Upload File{" "}
           </Button>
-
           <input
             type="file"
             name="file"
             onChange={handleFileChange}
-           
             multiple // Ako želite podršku za više fajlova
           />
           <FormDialog createFolderHandler={createFolderHandler}> </FormDialog>
-          {open && <PlayListDialog> </PlayListDialog>}
-          
+          <div style={{ margin: "15px" }}>
+            {/* <PlayListDialog createPlaylistHandler={createPlaylistHandler}>
+              {" "}
+            </PlayListDialog> */}
+
+            <div style={{ display: "flex" }}>
+              <Button variant="contained" onClick={createPlaylistHandler}>
+                {" "}
+                Kreiraj Playlistu{" "}
+              </Button>
+
+              <TextField
+                id="standard-basic"
+                label="Naziv playliste"
+                variant="standard"
+                style={{ marginLeft: "15px" }}
+                onChange={(e) => setnazivPlayliste(e.target.value)}
+              />
+            </div>
+          </div>
+          {/* <img  style={{width:'200px', height:'200px'}} src="http://127.0.0.1:5000/ajax.jpg"></img> */}
+          <button> perkoni </button>
+
+<Button> Petar </Button>
+
+
+
+
+          <div>
+          <YouTube videoId={urlAdresa}  />
+         
+
+{Array.isArray(sadrzajFoldera) && sadrzajFoldera.map((element, index) => (
+  <div key={index}>
+    {/* Ovde možete raditi sa svakim elementom niza */}
+    <p>{element}</p> {/* Primer: Prikazuje svaki element niza kao paragraf */}
+    {/* Dodajte ovde dodatnu logiku za prikaz slike ili linka na osnovu ekstenzije */}
+    {element.endsWith('.jpg') || element.endsWith('.jpeg') || element.endsWith('.png') || element.endsWith('.gif') ?
+      <img src={`http://127.0.0.1:5000/${element}`} alt={`Slika ${index}`} />
+    : element.endsWith('.pdf') ?
+      // Prikaži link za preuzimanje PDF-a
+      <div className="folderContainer"  onClick={() => window.location.replace(`http://127.0.0.1:5000/${element}`)}>
+        <FolderIcon /> {element}  
+      </div>
+    :
+      <p>Nepoznata ekstenzija: {element.split('.').pop().toLowerCase()}</p>
+    }
+  </div>
+))}
+
+
+
+          </div>
         </div>
       </Box>
     </Box>

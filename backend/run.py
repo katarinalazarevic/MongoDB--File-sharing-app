@@ -2,7 +2,12 @@ from flask_cors import CORS
 from flask_restful import Api, Resource
 from flask import Flask
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path='',
+    static_folder='uploads',
+    template_folder='web/templates'
+    )
 api = Api(app)
 
 UPLOAD_FOLDER = 'uploads'

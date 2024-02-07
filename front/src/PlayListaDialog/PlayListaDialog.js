@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function PlayListDialog ({createFolderHandler, }) {
+export default function PlayListDialog ({ createPlaylistHandler }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -32,12 +32,14 @@ export default function PlayListDialog ({createFolderHandler, }) {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
+            console("nersto")
             const email = formJson.text;
+            console.log("petar kralj", email);
             console.log(formJson);
 
-            createFolderHandler(formJson.text);
-            
-            console.log(email);
+          //  createFolderHandler(formJson.text);
+          console.log("pozivam createPlkatlist handler ")
+            createPlaylistHandler(formJson.text);
             handleClose();
           },
         }}
@@ -62,7 +64,7 @@ export default function PlayListDialog ({createFolderHandler, }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Exit</Button>
-          <Button type="submit">Dodaj</Button>
+          <Button type="submit"  >Dodaj</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

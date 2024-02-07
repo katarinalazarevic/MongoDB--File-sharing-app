@@ -17,7 +17,7 @@ def allowed_file(filename):
 @slika_routes.route("/UploadSliku",methods=['POST'])
 def UploadSliku():
     folder=request.form.get('folder')
-    print("vrednosti su ", folder)
+    print("vrednosti su ", request.form)
     email = request.form.get('email')
     if not email:
         return jsonify({'error': 'No email provided'}), 400
@@ -50,16 +50,16 @@ def UploadSliku():
         print(file_path)
         file.save(file_path)
 
-        image = Image(
-            imeFajla=filename,
-            sadrzaj=file_path,  # Čuvanje putanje do fajla umesto samog sadržaja
-            vlasnik=email
-        )
+        # image = Image(
+        #     imeFajla=filename,
+        #     sadrzaj=file_path,  # Čuvanje putanje do fajla umesto samog sadržaja
+        #     vlasnik=email
+        # )
 
-        image_id = mongo_db.files.insert_one(image.to_dict()).inserted_id
+        # image_id = mongo_db.files.insert_one(image.to_dict()).inserted_id
         mongo_db.foldersf.update_one(
                 {'naziv': folder},
-                {'$push': {'files': image.sadrzaj}}
+                {'$push': {'files': filename}}
             )
 
         return jsonify({'message': 'Image uploaded successfully'}),201

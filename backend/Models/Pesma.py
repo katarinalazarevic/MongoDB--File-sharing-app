@@ -12,5 +12,5 @@ class Pesma:
         return {
             'url': self.url,
             'roditelj': self.roditelj,
-            'datumPostavljanja': self.datumPostavljanja
+           'datumPostavljanja': self.datumPostavljanja
         }

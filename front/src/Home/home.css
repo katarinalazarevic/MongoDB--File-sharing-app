@@ -1,0 +1,9 @@
+.folderContainer {
+    display: inline-block; /* Da bi element bio blok, ali se ponašao kao inline element */
+    cursor: pointer; /* Kursor postaje pokazivač kad se pređe preko elementa */
+  }
+  
+  .folderContainer:hover {
+    text-decoration: underline; /* Podvlačenje teksta kada se pređe preko elementa */
+  }
+  

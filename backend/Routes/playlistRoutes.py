@@ -94,5 +94,29 @@ def IzmeniPlaylistu():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+
+@playlist_routes.route("/vratiPlayliste/<email>", methods=["GET"])
+def vratiPlaylistu(email):
+    try:
+        email_vlasnika = email
+        
+        if not email_vlasnika:
+            return jsonify({"error": "Potrebno je proslediti ime vlasnika."}), 400
+
+        # Pronađi sve playliste sa datim email-om vlasnika
+        playliste = list(mongo_db.playlists.find({"vlasnik": email_vlasnika}))
+
+        # Konvertuj ObjectId u string
+        for playlista in playliste:
+            playlista['_id'] = str(playlista['_id'])
+
+        return jsonify(playliste), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 
 #get metode !!!!

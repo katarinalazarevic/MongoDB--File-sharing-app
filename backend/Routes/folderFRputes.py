@@ -22,7 +22,7 @@ def NapraviFolder():
         mongo_db.foldersf.insert_one({
             'naziv': naziv,
             "roditelj": postojeci.get('naziv'),
-            "datumKreiranja": datetime.utcnow(),
+          #  "datumKreiranja": datetime.utcnow(),  # Ispravno pozivajte utcnow() iz datetime objekta
             "files": [file for file in noviFolder.files],
         })
         return jsonify({'message': 'SUCCESS'}), 201
@@ -166,6 +166,23 @@ def IzmeniFolder():
         mongo_db.foldersf.update_one({'_id': folder['_id']}, {'$set': {'naziv': novo_ime}})
 
         return jsonify({'message': 'Playlista uspešno izmenjena'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@folder_routes.route("/vratiSadrzajFoldera", methods=['POST'])
+def vratiSadrzajFoldera():
+    try:
+        data = request.get_json()
+        nazivFoldera = data.get('naziv')
+        
+        folder = mongo_db.foldersf.find_one({'naziv': nazivFoldera})
+        
+        if not folder:
+            return jsonify({'message': "Nije pronađen folder"}), 404
+
+        files = folder.get('files', [])
+        return jsonify({'files': files}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

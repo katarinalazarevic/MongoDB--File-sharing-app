@@ -6,6 +6,7 @@
     "@mui/material": "^5.15.7",
     "@mui/system": "^5.15.7",
     "axios": "^1.6.7",
-    "react-router-dom": "^6.21.3"
+    "react-router-dom": "^6.21.3",
+    "react-youtube": "^10.1.0"
   }
 }

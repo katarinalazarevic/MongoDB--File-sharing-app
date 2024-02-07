@@ -1,4 +1,6 @@
-import datetime
+from datetime import datetime
+datetime.utcnow()
+
 from flask import Blueprint, request, jsonify
 from Models.Pesma import Pesma
 from db_config import mongo_db
@@ -11,7 +13,10 @@ def UploadPesmu():
     roditelj = data.get('roditelj')
     url = data.get('url')
     plejlista=data.get('playlist')
-    playlista = mongo_db.playlists.find_one({'naziv': plejlista,'email': roditelj})
+    print(roditelj)
+    print(plejlista)
+    print(url)
+    playlista = mongo_db.playlists.find_one({'naziv': plejlista,'vlasnik': roditelj})
     if not playlista:
         return jsonify({'message': 'Nepostojeca playlista'}), 400
     
@@ -25,12 +30,12 @@ def UploadPesmu():
         return jsonify({'error': 'No URL provided'}), 400
 
     muzika = Pesma(
-        sadrzaj=url,
+        url=url,
         roditelj=roditelj,
-        datumPostavljanja=datetime.utcnow()
+        datumPostavljanja=datetime.utcnow() 
     )
 
-    mongo_db.playlists.update_one({'naziv': plejlista,'email': roditelj},
+    mongo_db.playlists.update_one({'naziv': plejlista,'vlasnik': roditelj},
                                    {'$push': {'pesme': url}})
     muzika_id = mongo_db.pesma.insert_one(muzika.to_dict()).inserted_id
 
