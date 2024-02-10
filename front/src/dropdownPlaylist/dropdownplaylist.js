@@ -6,26 +6,22 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { TreeView } from "@mui/x-tree-view/TreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from "@mui/icons-material/Delete";
+import CreateIcon from "@mui/icons-material/Create";
 import PlayListDialog from "../PlayListaDialog/PlayListaDialog";
 
-
 const DropDownPlaylist = ({
-  
   seturlAdresa,
   postaviNazivPlaylisteGdeDodajemoPesmu,
- 
 }) => {
   const ucitaniKorisnik = localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
   const [selected, setSelected] = React.useState(0);
   const [tree, setTree] = React.useState(null);
-  const ulogovaniKorisnik=localStorage.getItem('username');
+  const ulogovaniKorisnik = localStorage.getItem("username");
 
   const [editMode, setEditMode] = useState(false);
-  const [newNamePlaylist, setNewPlaylistName]= useState('');
-
+  const [newNamePlaylist, setNewPlaylistName] = useState("");
 
   useEffect(() => {
     console.log(ucitaniKorisnik);
@@ -47,8 +43,8 @@ const DropDownPlaylist = ({
   }, [selected]);
 
   const clickHandler = (imePlayListe) => {
-      console.log("kliknuio sam na ", imePlayListe);
-      postaviNazivPlaylisteGdeDodajemoPesmu(imePlayListe); 
+    console.log("kliknuio sam na ", imePlayListe);
+    postaviNazivPlaylisteGdeDodajemoPesmu(imePlayListe);
     //let id = extractVideoId(urlAdresa);
     //console.log("postavljam  ", id);
     //seturlAdresa(id);
@@ -67,22 +63,20 @@ const DropDownPlaylist = ({
     }
   }
 
-  const handleDeletePesma= async (URLpesma)=>
-  {
-    console.log("Url pesme je ",URLpesma);
+  const handleDeletePesma = async (URLpesma) => {
+    console.log("Url pesme je ", URLpesma);
 
     try {
       const response = await axios.delete("http://127.0.0.1:5000/ObrisiPesmu", {
-  data: {
-    url: URLpesma,
-    email: ulogovaniKorisnik
-  },
-  headers: {
-    "Content-Type": "application/json"
-  }
-});
+        data: {
+          url: URLpesma,
+          email: ulogovaniKorisnik,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    
       if (response.status === 200) {
         window.confirm(response.message);
       } else {
@@ -90,31 +84,28 @@ const DropDownPlaylist = ({
       }
     } catch (error) {
       console.error("Greška prilikom brisanja playliste:", error);
-      window.confirm("Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo.");
+      window.confirm(
+        "Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo."
+      );
     }
-
   };
 
-
-  const handleUpdatePlayListName= async  ( email,novoIme,staroIme)=>
-  {
-     
-     
-      
-     
-
+  const handleUpdatePlayListName = async (email, novoIme, staroIme) => {
     try {
-      const response = await axios.put("http://127.0.0.1:5000/IzmeniPlaylistu", {
-        vlasnik: email,
-    trenutno_ime: staroIme,
-    novo_ime: novoIme
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.put(
+        "http://127.0.0.1:5000/IzmeniPlaylistu",
+        {
+          vlasnik: email,
+          trenutno_ime: staroIme,
+          novo_ime: novoIme,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
-    
+      );
+
       if (response.status === 200) {
         window.confirm("Uspesno ste update playlistu: " + staroIme);
       } else {
@@ -122,29 +113,30 @@ const DropDownPlaylist = ({
       }
     } catch (error) {
       console.error("Greška prilikom brisanja playliste:", error);
-      window.confirm("Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo.");
+      window.confirm(
+        "Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo."
+      );
     }
-    
-      
-
   };
-
 
   const handleDeletePlaylist = async (event, imeplayliste) => {
     event.stopPropagation(); // Zaustavi dalje širenje događaja klika
-    console.log("Pozivam fju")
-    
+    console.log("Pozivam fju");
+
     try {
-      const response = await axios.delete("http://127.0.0.1:5000/ObrisiPlaylistu", {
-        data: {
-          vlasnik: ulogovaniKorisnik,
-          naziv: imeplayliste
-        },
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.delete(
+        "http://127.0.0.1:5000/ObrisiPlaylistu",
+        {
+          data: {
+            vlasnik: ulogovaniKorisnik,
+            naziv: imeplayliste,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
-    
+      );
+
       if (response.status === 200) {
         window.confirm("Uspesno ste obrisali playlistu: " + imeplayliste);
       } else {
@@ -152,16 +144,15 @@ const DropDownPlaylist = ({
       }
     } catch (error) {
       console.error("Greška prilikom brisanja playliste:", error);
-      window.confirm("Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo.");
+      window.confirm(
+        "Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo."
+      );
     }
-    
 
     //ovde cemo da pozovemo metodu koja ce da obrise playlistu
 
-
     // Implementirajte logiku za brisanje playliste
   };
-  
 
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);
@@ -181,32 +172,38 @@ const DropDownPlaylist = ({
     if (Array.isArray(playlists)) {
       return playlists.map((playlist) => (
         <TreeItem
-  key={playlist._id}
-  nodeId={playlist._id}
-  label={
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <span>{`Playlista: ${playlist.naziv}`}</span>
-      <DeleteIcon onClick={(event) => handleDeletePlaylist(event, playlist.naziv)} />
-      {/* <CreateIcon onClick={(event) => handleUpdatePlayList(event, playlist.naziv)} >   </CreateIcon> */}
-      <PlayListDialog
-    playlistNameprop={playlist.naziv}
-    handleUpdatePlayListName={( a, b, c) => handleUpdatePlayListName( a, b, c)}
-/>
-    </div>
-    
-  }
-  onClick={() => clickHandler(playlist.naziv)}
->
-{playlist.pesme.map((pesma, index) => (
-  <TreeItem key={index} nodeId={`${playlist._id}-${index}`} label={
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <span>{pesma}</span>
-      <DeleteIcon onClick={() => handleDeletePesma(pesma, index)} />
-    </div>
-  } />
-))}
-
-</TreeItem>
+          key={playlist._id}
+          nodeId={playlist._id}
+          label={
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <span>{`Playlista: ${playlist.naziv}`}</span>
+              <DeleteIcon
+                onClick={(event) => handleDeletePlaylist(event, playlist.naziv)}
+              />
+              {/* <CreateIcon onClick={(event) => handleUpdatePlayList(event, playlist.naziv)} >   </CreateIcon> */}
+              <PlayListDialog
+                playlistNameprop={playlist.naziv}
+                handleUpdatePlayListName={(a, b, c) =>
+                  handleUpdatePlayListName(a, b, c)
+                }
+              />
+            </div>
+          }
+          onClick={() => clickHandler(playlist.naziv)}
+        >
+          {playlist.pesme.map((pesma, index) => (
+            <TreeItem
+              key={index}
+              nodeId={`${playlist._id}-${index}`}
+              label={
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span>{pesma}</span>
+                  <DeleteIcon onClick={() => handleDeletePesma(pesma, index)} />
+                </div>
+              }
+            />
+          ))}
+        </TreeItem>
       ));
     } else {
       console.error("playlists nije niz");
@@ -253,8 +250,6 @@ const DropDownPlaylist = ({
           <Button>Pryaer </Button>
         </div>
       )}
-
-
     </Box>
   );
 };

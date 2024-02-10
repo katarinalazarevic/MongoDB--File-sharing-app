@@ -71,15 +71,15 @@ def ObrisiPesmu():
         pesma = mongo_db.pesma.find_one({'url': url})
 
         # Pronalaženje playliste korisnika koja sadrži tu pesmu
-        # playliste = mongo_db.playlists.find({'pesme': url,'vlasnik':email})
-        # print(playliste)
+        playliste = mongo_db.playlists.find_one({'pesme': url,'vlasnik':email})
+        print(playliste)
         # # Iteriranje kroz rezultate pretrage
         # for playlista in playliste:
         #     # Pronađena je playlista koja sadrži datu pesmu
         #     print("Pronađena playlista:", playlista)
         #     # Ovde možete dodati kod za brisanje pesme iz playliste
 
-        # print("Pesma je", pesma)
+        print("Pesma je", pesma)
         # print("Playlista je", playlista)
 
         # Provera da li je pesma i playlista pronađena
@@ -93,7 +93,7 @@ def ObrisiPesmu():
             {'vlasnik': email, 'pesme': url},
             {'$pull': {'pesme':  url}}
         )
-
+        print(result)
         # Provera da li je pesma bila uklonjena iz playliste
         if result.modified_count == 0:
             return jsonify({'message': 'Pesma nije pridružena korisniku ili nije pronađena u playlisti'}), 400

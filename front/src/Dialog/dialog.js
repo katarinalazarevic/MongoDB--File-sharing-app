@@ -62,7 +62,7 @@ export default function FormDialog ({createFolderHandler, }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Subscribe</Button>
+          <Button type="submit">Kreiraj</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
