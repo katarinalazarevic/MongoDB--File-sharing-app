@@ -12,21 +12,32 @@ def NapraviFolder():
         data=request.get_json()
         roditelj=data['roditelj']
         naziv=data['naziv']
+        sfolder=mongo_db.foldersf.find_one({'naziv':naziv})
+        if sfolder:
+            return jsonify({'message': 'Folder sa datim nazivom vec postoji'}), 400
         postojeci = mongo_db.foldersf.find_one({'naziv': roditelj})
-        print(postojeci)
-        if not postojeci:
-            return jsonify({'message': 'Folder roditelj ne postoji'}), 400
-       
-        noviFolder=Folder(naziv,roditelj)
-
-        mongo_db.foldersf.insert_one({
+        if (roditelj == '#'):
+            noviFolder=Folder(naziv,roditelj)
+            mongo_db.foldersf.insert_one({
             'naziv': naziv,
-            "roditelj": postojeci.get('naziv'),
+            "roditelj": 'null',
           #  "datumKreiranja": datetime.utcnow(),  # Ispravno pozivajte utcnow() iz datetime objekta
             "files": [file for file in noviFolder.files],
         })
+        else:
+            if not postojeci:
+                return jsonify({'message': 'Folder roditelj ne postoji'}), 400
+       
+            noviFolder=Folder(naziv,roditelj)
+
+            mongo_db.foldersf.insert_one({
+                'naziv': naziv,
+                "roditelj": postojeci.get('naziv'),
+            #  "datumKreiranja": datetime.utcnow(),  # Ispravno pozivajte utcnow() iz datetime objekta
+                "files": [file for file in noviFolder.files],
+            })
+            return jsonify({'message': 'SUCCESS'}), 201
         return jsonify({'message': 'SUCCESS'}), 201
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
     # try:
@@ -129,16 +140,27 @@ def ProcitajSveFoldere():
 
     return jsonify({'folders': rezultat})
 
+def obrisi_podfoldere(naziv_foldera):
+            # Pronalaženje podfoldera koji imaju roditelja 'naziv_foldera'
+            podfolderi = mongo_db.foldersf.find({'rodjitelj': naziv_foldera})
+            # Brisanje podfoldera
+            for podfolder in podfolderi:
+                # Rekurzivno pozivanje funkcije za brisanje podfoldera
+                obrisi_podfoldere(podfolder['naziv'])
+                # Brisanje podfoldera
+                mongo_db.foldersf.delete_one({'naziv': podfolder['naziv']})
 
 @folder_routes.route("/ObrisiFolder/<naziv_foldera>", methods=['DELETE'])
 def ObrisiFolder(naziv_foldera):
     try:
-        playlist = mongo_db.foldersf.find_one({'naziv': naziv_foldera})
-        if not playlist:
+        folder = mongo_db.foldersf.find_one({'naziv': naziv_foldera})
+        if not folder:
             return jsonify({'message': 'Folder ne postoji'}), 404
-
-        # Brisanje same playliste
-        mongo_db.playlists.delete_one({'naziv': naziv_foldera})
+        
+        # Pozivanje rekurzivne funkcije za brisanje podfoldera
+        
+        # Brisanje samog foldera
+        mongo_db.foldersf.delete_one({'naziv': naziv_foldera})
 
         return jsonify({'message': 'Folder uspešno obrisan'}), 200
 
