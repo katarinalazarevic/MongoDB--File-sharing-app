@@ -293,13 +293,13 @@ const DrawerComponent = () => {
       if (response.status === 201) {
         if (response.data.message === "SUCCESS") {
           console.log("Uspesno dodat folder:", response.data.message);
-
+          window.confirm("Uspesno dodat folder!");
           // navigate("/");
         } else {
           console.log(
             "Neuspesno dodat folder! Status kod 201, ali prijava neuspešna."
           );
-          window.confirm("Neuspešna prijava!");
+          window.confirm("Neuspešna dodat folder !");
         }
       } else {
         console.log("Neuspešna prijava! Status kod nije 200.");

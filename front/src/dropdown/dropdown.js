@@ -8,21 +8,24 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { TreeView } from "@mui/x-tree-view/TreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from "@mui/icons-material/Delete";
+import CreateIcon from "@mui/icons-material/Create";
 import FolderDialog from "../FolderDialog/folderdialog";
 
-
-const DropDown = ({ pronadjiImeRoditelja,vratiSadrzajFoldera,setShowDivVideo}) => {
-  const ucitaniKorisnik=localStorage.getItem("username");
+const DropDown = ({
+  pronadjiImeRoditelja,
+  vratiSadrzajFoldera,
+  setShowDivVideo,
+}) => {
+  const ucitaniKorisnik = localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
   const [selected, setSelected] = React.useState(0);
 
-  const [treutnoImeFoldera, setTrenutnoimeFoldera]= React.useState('');
-  
+  const [treutnoImeFoldera, setTrenutnoimeFoldera] = React.useState("");
+
   const [tree, setTree] = React.useState({
-    'naziv': "Meni",
-    'subfolders': [],
+    naziv: "Meni",
+    subfolders: [],
   });
 
   useEffect(() => {
@@ -51,49 +54,62 @@ const DropDown = ({ pronadjiImeRoditelja,vratiSadrzajFoldera,setShowDivVideo}) =
     setExpanded(nodeIds);
   };
 
-  const deleteHandler = async (nazivFoldera)=>
-  {
-
-  };
-
-  const updateNameHandler= async  (nazivNovogFoldera)=>
-  {
-
-   
-    console.log(treutnoImeFoldera,nazivNovogFoldera);
-
+  const deleteHandler = async (nazivFoldera) => {
     try {
-      const response = await axios.put("http://127.0.0.1:5000/IzmeniFolder", {
-        
-       trenutno_ime: treutnoImeFoldera,
-        novo_ime: nazivNovogFoldera
-      },
-      {
+      const response = await axios.delete(`http://127.0.0.1:5000/ObrisiFolder/${nazivFoldera}`, 
+        {
         headers: {
           "Content-Type": "application/json",
         }
       });
     
       if (response.status === 200) {
-        window.confirm("Uspesno ste promeni ime  foldera: " + treutnoImeFoldera);
+        window.confirm("Uspesno ste obrisali folder: " + treutnoImeFoldera);
+      } else {
+        window.confirm("Neuspesno brisanje !");
+      }
+    } catch (error) {
+      console.error("Greška prilikom brisanja foldera:", error);
+      window.confirm("Došlo je do greške prilikom brisanja foldera. Molimo vas pokušajte ponovo.");
+    }
+  };
+
+  const updateNameHandler = async (nazivNovogFoldera) => {
+    console.log(treutnoImeFoldera, nazivNovogFoldera);
+
+    try {
+      const response = await axios.put(
+        "http://127.0.0.1:5000/IzmeniFolder",
+        {
+          trenutno_ime: treutnoImeFoldera,
+          novo_ime: nazivNovogFoldera,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        window.confirm(
+          "Uspesno ste promeni ime  foldera: " + treutnoImeFoldera
+        );
       } else {
         window.confirm("Neuspesno menjanje !");
       }
     } catch (error) {
       console.error("Greška prilikom brisanja playliste:", error);
-      window.confirm("Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo.");
+      window.confirm(
+        "Došlo je do greške prilikom brisanja playliste. Molimo vas pokušajte ponovo."
+      );
     }
-    
-
-
-
   };
-
 
   const handleSelect = (event, nodeId) => {
     setShowDivVideo(false);
-   // console.log("postavio sam vrednost za div na false");
-    
+    // console.log("postavio sam vrednost za div na false");
+
     setSelected(nodeId);
     //createFolderHandler(nodeId);
 
@@ -101,7 +117,6 @@ const DropDown = ({ pronadjiImeRoditelja,vratiSadrzajFoldera,setShowDivVideo}) =
     setTrenutnoimeFoldera(nodeId);
     console.log("Kliknuo sam na :", nodeId);
     vratiSadrzajFoldera(nodeId);
-    
   };
 
   const handleExpandClick = () => {
@@ -120,15 +135,27 @@ const DropDown = ({ pronadjiImeRoditelja,vratiSadrzajFoldera,setShowDivVideo}) =
 
   const getTreeLeaf = (p) => {
     return (
-      <TreeItem nodeId={p.naziv} label={
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span>{p.naziv}</span> {/* Naziv */}
-          {p.naziv !== ucitaniKorisnik &&( <DeleteIcon  onClick={()=> deleteHandler(p.naziv)} style={{ marginLeft: 'auto' }} /> ) }{/* DeleteIcon, prikaži samo ako nije ulogovani korisnik */}
-          {p.naziv !== ucitaniKorisnik && <FolderDialog 
-          updateNameHandler={updateNameHandler}
-            style={{ marginLeft: '5px' }} />}
-        </div>
-      }>
+      <TreeItem
+        nodeId={p.naziv}
+        label={
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span>{p.naziv}</span> {/* Naziv */}
+            {p.naziv !== ucitaniKorisnik && (
+              <DeleteIcon
+                onClick={() => deleteHandler(p.naziv)}
+                style={{ marginLeft: "auto" }}
+              />
+            )}
+            {/* DeleteIcon, prikaži samo ako nije ulogovani korisnik */}
+            {p.naziv !== ucitaniKorisnik && (
+              <FolderDialog
+                updateNameHandler={updateNameHandler}
+                style={{ marginLeft: "5px" }}
+              />
+            )}
+          </div>
+        }
+      >
         {p.subfolders.map((q) => getTreeLeaf(q, ucitaniKorisnik))}
       </TreeItem>
     );
