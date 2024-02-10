@@ -9,6 +9,7 @@ pesma_routes = Blueprint("pesma_routes", __name__)
 
 @pesma_routes.route("/UploadPesmu", methods=['POST'])
 def UploadPesmu():
+    #data=request.get_json()
     data = request.form.to_dict()
     roditelj = data.get('roditelj')
     url = data.get('url')
@@ -45,7 +46,7 @@ def UploadPesmu():
 @pesma_routes.route("/VratiPesmePleyliste",methods=['POST'])
 def VratiPesmePleyliste():
     try:
-        data = request.get_json
+        data = request.get_json()
         roditelj = data.get('roditelj')
         plejlista=data.get('playlist')
         playlista = mongo_db.playlists.find_one({'naziv': plejlista,'email': roditelj})
@@ -70,31 +71,35 @@ def ObrisiPesmu():
         pesma = mongo_db.pesma.find_one({'url': url})
 
         # Pronalaženje playliste korisnika koja sadrži tu pesmu
-        playliste = mongo_db.playlists.find({'pesme': url})
-        print(playliste)
-        # Iteriranje kroz rezultate pretrage
-        for playlista in playliste:
-            # Pronađena je playlista koja sadrži datu pesmu
-            print("Pronađena playlista:", playlista)
-            # Ovde možete dodati kod za brisanje pesme iz playliste
+        # playliste = mongo_db.playlists.find({'pesme': url,'vlasnik':email})
+        # print(playliste)
+        # # Iteriranje kroz rezultate pretrage
+        # for playlista in playliste:
+        #     # Pronađena je playlista koja sadrži datu pesmu
+        #     print("Pronađena playlista:", playlista)
+        #     # Ovde možete dodati kod za brisanje pesme iz playliste
 
-        print("Pesma je", pesma)
-        print("Playlista je", playlista)
+        # print("Pesma je", pesma)
+        # print("Playlista je", playlista)
 
         # Provera da li je pesma i playlista pronađena
         if not pesma:
             return jsonify({'message': 'Nepostojeća pesma'}), 400
-        if not playlista:
-            return jsonify({'message': 'Pesma nije pridružena korisniku'}), 400
+        # if not playlista:
+        #     return jsonify({'message': 'Pesma nije pridružena korisniku'}), 400
 
         # Brisanje pesme iz baze podataka
-        mongo_db.pesme.delete_one({'url': url})
-
-        # Izbrisi pesmu iz niza pesama u playlisti
-        mongo_db.playlists.update_one(
-            {'vlasnik': email, 'pesme.url': url},
-            {'$pull': {'pesme': {'url': url}}}
+        result = mongo_db.playlists.update_one(
+            {'vlasnik': email, 'pesme': url},
+            {'$pull': {'pesme':  url}}
         )
+
+        # Provera da li je pesma bila uklonjena iz playliste
+        if result.modified_count == 0:
+            return jsonify({'message': 'Pesma nije pridružena korisniku ili nije pronađena u playlisti'}), 400
+
+        # Brisanje pesme iz baze podataka
+        mongo_db.pesma.delete_one({'url': url})
 
         return jsonify({'message': 'Pesma uspešno obrisana iz baze i playliste'}), 200
     except Exception as e:
