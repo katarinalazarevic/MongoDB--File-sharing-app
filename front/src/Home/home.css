@@ -7,3 +7,13 @@
     text-decoration: underline; /* Podvlačenje teksta kada se pređe preko elementa */
   }
   
+  .heading {
+    font-family: 'Roboto', sans-serif;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+  
+  .heading:hover {
+    color: blue;
+  }
+  

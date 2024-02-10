@@ -58,26 +58,43 @@ def VratiPesmePleyliste():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@pesma_routes.route("/ObrisiPesmu",methods=['DELETE'])
+@pesma_routes.route("/ObrisiPesmu", methods=['DELETE'])
 def ObrisiPesmu():
     try:
+        # Dobijanje podataka iz tela zahteva
+        data = request.get_json()
+        url = data.get('url')
+        email = data.get('email')  # Korisnik
 
-        data=request.get_json()
-        url=data.get('url')
-        email=data.get('email') #korisnik
-        pesma= mongo_db.pesme.find_one({'url':url})
-        playlista = mongo_db.playlists.find_one({'email': email,'pesme': {'$elemMatch': {'url': url}}})
+        # Pronalaženje pesme po URL-u
+        pesma = mongo_db.pesma.find_one({'url': url})
+
+        # Pronalaženje playliste korisnika koja sadrži tu pesmu
+        playliste = mongo_db.playlists.find({'pesme': url})
+        print(playliste)
+        # Iteriranje kroz rezultate pretrage
+        for playlista in playliste:
+            # Pronađena je playlista koja sadrži datu pesmu
+            print("Pronađena playlista:", playlista)
+            # Ovde možete dodati kod za brisanje pesme iz playliste
+
+        print("Pesma je", pesma)
+        print("Playlista je", playlista)
+
+        # Provera da li je pesma i playlista pronađena
         if not pesma:
-            return jsonify({'message': 'Nepostojeca pesma'}), 400
+            return jsonify({'message': 'Nepostojeća pesma'}), 400
         if not playlista:
-            return jsonify({'message': 'Nepostojeca playlista'}), 400
+            return jsonify({'message': 'Pesma nije pridružena korisniku'}), 400
+
+        # Brisanje pesme iz baze podataka
         mongo_db.pesme.delete_one({'url': url})
 
-            # Izbrisi pesmu iz niza pesama u playlisti
+        # Izbrisi pesmu iz niza pesama u playlisti
         mongo_db.playlists.update_one(
-                {'vlasnik': email, 'pesme.url': url},
-                {'$pull': {'pesme': {'url': url}}}
-            )
+            {'vlasnik': email, 'pesme.url': url},
+            {'$pull': {'pesme': {'url': url}}}
+        )
 
         return jsonify({'message': 'Pesma uspešno obrisana iz baze i playliste'}), 200
     except Exception as e:

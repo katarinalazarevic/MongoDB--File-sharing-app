@@ -6,23 +6,34 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import CreateIcon from '@mui/icons-material/Create';
 
-export default function PlayListDialog ({ createPlaylistHandler }) {
+
+export default function PlayListDialog ({ playlistNameprop,handleUpdatePlayListName }) {
   const [open, setOpen] = React.useState(false);
+  const [playlistName, setPlaylistName] = React.useState('');
+  const ulogovaniKorisnik= localStorage.getItem('username');
+
+
 
   const handleClickOpen = () => {
     setOpen(true);
+    console.log(playlistNameprop);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
+  const handleInputChange = (event) => {
+    setPlaylistName(event.target.value);
+  };
+
   return (
     <React.Fragment>
-      <Button variant="contained" onClick={handleClickOpen}>
+      <CreateIcon  onClick={handleClickOpen}>
        Kreiraj playlistu 
-      </Button>
+      </CreateIcon>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -32,22 +43,23 @@ export default function PlayListDialog ({ createPlaylistHandler }) {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
-            console("nersto")
-            const email = formJson.text;
-            console.log("petar kralj", email);
+            
+            const novoIme = formJson.text;
+           
+            
             console.log(formJson);
-
+           handleUpdatePlayListName(ulogovaniKorisnik,novoIme,playlistNameprop);
           //  createFolderHandler(formJson.text);
           console.log("pozivam createPlkatlist handler ")
-            createPlaylistHandler(formJson.text);
+          //  createPlaylistHandler(formJson.text);
             handleClose();
           },
         }}
       >
-        <DialogTitle>Kreiranje playliste</DialogTitle>
+        <DialogTitle>Update</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Unesite naziv playliste koju biste zeleli da dodate
+            Unesite novo ime playliste koju biste zeleli da promenite
           </DialogContentText>
           <TextField
             autoFocus
@@ -55,16 +67,16 @@ export default function PlayListDialog ({ createPlaylistHandler }) {
             margin="dense"
             id="name"
             name="text"
-            label="Naziv playliste"
+            label="novo ime playliste"
             type="text"
-           // onChange={handleInputChange}
+            onChange={handleInputChange}
             fullWidth
             variant="standard"
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Exit</Button>
-          <Button type="submit"  >Dodaj</Button>
+          <Button type="submit"  >Promeni</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
