@@ -219,12 +219,7 @@ const DropDownPlaylist = ({
   return (
     <Box sx={{ minHeight: 250, flexGrow: 1, maxWidth: 270 }}>
       <Box sx={{ mb: 1 }}>
-        <Button onClick={() => setExpanded([])}>
-          {expanded.length === 0 ? "Expand all" : "Collapse all"}
-        </Button>
-        <Button onClick={() => setSelected([])}>
-          {selected.length === 0 ? "Select all" : "Unselect all"}
-        </Button>
+        
       </Box>
       <TreeView
         aria-label="controlled"

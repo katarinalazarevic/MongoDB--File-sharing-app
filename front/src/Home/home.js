@@ -33,12 +33,11 @@ import { App1 } from "../UploadFolder/upload";
 import PlayListDialog from "../PlayListaDialog/PlayListaDialog";
 import DropDownPlaylist from "../dropdownPlaylist/dropdownplaylist";
 import YouTube from "react-youtube";
-import   './home.css'
+import "./home.css";
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-</style>
-
-
+  @import
+  url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+</style>;
 
 const DrawerComponent = () => {
   const drawerWidth = 350;
@@ -50,24 +49,20 @@ const DrawerComponent = () => {
 
   const ulogovaniKorisnik = localStorage.getItem("username");
   const [userChildren, setUserChildren] = useState([]);
-  const [urlAdresa, seturlAdresa]= useState('');
-  const [prikaziVideo, setprikaziVideo]= useState(false);
-  const [sadrzajFoldera,setSadrzajFodlera]= useState([]);
-  const [showVideo, setShowVideo]= useState(false);
-  const [showDodavanjePesme, setShowDodavanjePesme]= useState(false);
-  const [urlNovePesme,setUrlNovePesme]= useState('');
-  const [playlistName,setPlaylistName]=useState('');
+  const [urlAdresa, seturlAdresa] = useState("");
+  const [prikaziVideo, setprikaziVideo] = useState(false);
+  const [sadrzajFoldera, setSadrzajFodlera] = useState([]);
+  const [showVideo, setShowVideo] = useState(false);
+  const [showDodavanjePesme, setShowDodavanjePesme] = useState(false);
+  const [urlNovePesme, setUrlNovePesme] = useState("");
+  const [playlistName, setPlaylistName] = useState("");
 
-  const [showDivVideo,setShowDivVideo]=useState(false);
-
-
-
+  const [showDivVideo, setShowDivVideo] = useState(false);
 
   const headingStyle = {
-    fontFamily: 'Roboto, sans-serif'
+    fontFamily: "Roboto, sans-serif",
   };
-  const showVideoHandler= ()=>
-  {
+  const showVideoHandler = () => {
     setShowVideo(!showVideo);
   };
   const createFolderHandler = async (imeDeteta) => {
@@ -75,7 +70,6 @@ const DrawerComponent = () => {
     // napraviFolder
     napraviFolder(ImeRoditelja, imeDeteta);
   };
-  
 
   const createPlaylistHandler = async (nazivPlayliste) => {
     console.log(nazivPlayliste);
@@ -118,15 +112,10 @@ const DrawerComponent = () => {
     }
   };
 
-  const dodajPesmuPlaylistiHandler= async()=>
-  {
+  const dodajPesmuPlaylistiHandler = async () => {
     //ovo se poziva kad se klikne na dugme  UploadPesmu
 
     try {
-      
-     
-      
-
       const formData = new FormData();
       formData.append("roditelj", ulogovaniKorisnik);
       formData.append("playlist", playlistName);
@@ -161,16 +150,11 @@ const DrawerComponent = () => {
       console.error("Greška prilikom dohvatanja podfoldera", error);
       // Možete dodati dodatnu logiku za grešku, na primer, prikazivanje poruke korisniku
     }
-
-
   };
 
-  const postaviNazivPlaylisteGdeDodajemoPesmu=(imePlayliste)=>
-  {
+  const postaviNazivPlaylisteGdeDodajemoPesmu = (imePlayliste) => {
     setPlaylistName(imePlayliste);
     console.log("U home sam i primio postavio sam ime playliste", imePlayliste);
-
-
   };
 
   const openDialogHandler = () => {
@@ -184,33 +168,34 @@ const DrawerComponent = () => {
     // setSelectedFiles(files);
   };
 
-  const  handleDodavanjePesme= ()=>
-  {
+  const handleDodavanjePesme = () => {
     setShowDodavanjePesme(!showDodavanjePesme);
-
   };
 
   useEffect(() => {
     // Implementirajte logiku koja će se izvršiti svaki put kada se promeni urlAdresa
     console.log("Promenjena je vrednost urlAdresa:", urlAdresa);
-    console.log("Usao sam u useeffect")
+    console.log("Usao sam u useeffect");
     //nizSlika.push(novaSlika)
-    //setNizSlika(nizSlika) //ovo ne radi 
-   // setNizSlika([...nizSlika, novataSlikata])  ovo je 
+    //setNizSlika(nizSlika) //ovo ne radi
+    // setNizSlika([...nizSlika, novataSlikata])  ovo je
     //nizSlika = [...nizSlika, novataSlikata]
   }, [urlAdresa]);
 
-
   const vratiSadrzajFoldera = async (imeFoldera) => {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/vratiSadrzajFoldera", {
-        naziv: imeFoldera
-      }, {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        "http://127.0.0.1:5000/vratiSadrzajFoldera",
+        {
+          naziv: imeFoldera,
         },
-      });
-  
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.status === 200) {
         console.log("Dobijen sadržaj foldera", response.data);
         setSadrzajFodlera(response.data.files);
@@ -223,8 +208,6 @@ const DrawerComponent = () => {
       // Dodatna logika za neuspeh, npr. prikazivanje poruke korisniku
     }
   };
-  
-
 
   const uploadFileHandler = async () => {
     try {
@@ -360,8 +343,6 @@ const DrawerComponent = () => {
     }
   };
 
-  
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -400,12 +381,19 @@ const DrawerComponent = () => {
               </ListItemButton>
             </ListItem>
           ))}
-          <DropDownPlaylist seturlAdresa={seturlAdresa} setprikaziVideo={setprikaziVideo} prikaziVideo={prikaziVideo} 
-          handleDodavanjePesme={handleDodavanjePesme}  postaviNazivPlaylisteGdeDodajemoPesmu={postaviNazivPlaylisteGdeDodajemoPesmu} >
-           </DropDownPlaylist>
+          <DropDownPlaylist
+            seturlAdresa={seturlAdresa}
+            setprikaziVideo={setprikaziVideo}
+            prikaziVideo={prikaziVideo}
+            handleDodavanjePesme={handleDodavanjePesme}
+            postaviNazivPlaylisteGdeDodajemoPesmu={
+              postaviNazivPlaylisteGdeDodajemoPesmu
+            }
+          ></DropDownPlaylist>
         </List>
         <Divider />
         <List>
+            <p style={{marginLeft:'80px', size:'25'}}> Folderi</p>
           <ListItem disablePadding>
             <DropMenu
               procitajMojuDecu={procitajMojuDecu}
@@ -414,7 +402,6 @@ const DrawerComponent = () => {
               vratiSadrzajFoldera={vratiSadrzajFoldera}
               setShowDivVideo={setShowDivVideo}
             />
-           
           </ListItem>
         </List>
       </Drawer>
@@ -423,91 +410,155 @@ const DrawerComponent = () => {
         sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
       >
         <Toolbar />
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div className="divUploadFile">
-          <Button variant="contained" onClick={uploadFileHandler}>
-            Upload File{" "}
-          </Button>
+            <FormDialog createFolderHandler={createFolderHandler}> </FormDialog>
 
-          <input
-            type="file"
-            name="file"
-            onChange={handleFileChange}
-            multiple // Ako želite podršku za više fajlova
-          />
+            <Button
+              variant="contained"
+              onClick={uploadFileHandler}
+              style={{ marginLeft: "55px" }}
+            >
+              Upload File{" "}
+            </Button>
+
+            <input
+              style={{ margin: "5px" }}
+              type="file"
+              name="file"
+              onChange={handleFileChange}
+              multiple // Ako želite podršku za više fajlova
+            />
           </div>
-          <div  style={{  }} className="DivKojiseuvekprikazuje" >
-          <FormDialog createFolderHandler={createFolderHandler}> </FormDialog>
-          <div style={{ margin: "15px" }}>
-            {/* <PlayListDialog createPlaylistHandler={createPlaylistHandler}>
+          <div style={{}} className="DivKojiseuvekprikazuje">
+            <div
+              style={{ display: "flex", flexWrap: "wrap", marginTop: "15px" }}
+            >
+              {/* <PlayListDialog createPlaylistHandler={createPlaylistHandler}>
               {" "}
             </PlayListDialog> */}
 
-            <div style={{ display: "flex" }}>
-              <Button variant="contained" onClick={createPlaylistHandler}>
-                {" "}
-                Kreiraj Playlistu{" "}
-              </Button>
+              <div className="kreiraj" style={{ display: "block" }}>
+                <Button variant="contained" onClick={createPlaylistHandler}>
+                  {" "}
+                  Kreiraj Playlistu{" "}
+                </Button>
 
-              <TextField
-                id="standard-basic"
-                label="Naziv playliste"
-                variant="standard"
-                style={{ marginLeft: "15px" }}
-                onChange={(e) => setnazivPlayliste(e.target.value)}
-              />
+                <div>
+                  <TextField
+                    id="standard-basic"
+                    label="Naziv playliste"
+                    variant="standard"
+                    style={{ marginLeft: "15px" }}
+                    onChange={(e) => setnazivPlayliste(e.target.value)}
+                  />
+                </div>
+              </div>
 
+              <div className="dodaj" style={{ display: "block" }}>
+                <Button
+                  variant="contained"
+                  onClick={dodajPesmuPlaylistiHandler}
+                >
+                  {" "}
+                  Dodaj pesmu playlisti{" "}
+                </Button>
 
-              <Button variant="contained"   onClick={dodajPesmuPlaylistiHandler} >
-                {" "}
-                Dodaj pesmu playlisti {" "}
-              </Button>
-
-              <TextField
-                id="standard-basic"
-                label="Unesite url adresu"
-                variant="standard"
-                style={{ marginLeft: "15px" }}
-                onChange={(e) => setUrlNovePesme(e.target.value)}
-              />
-
-
+                <div>
+                  <TextField
+                    id="standard-basic"
+                    label="Unesite url adresu"
+                    variant="standard"
+                    style={{ marginLeft: "15px" }}
+                    onChange={(e) => setUrlNovePesme(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
+            {/* <img  style={{width:'200px', height:'200px'}} src="http://127.0.0.1:5000/ajax.jpg"></img> */}
           </div>
-          {/* <img  style={{width:'200px', height:'200px'}} src="http://127.0.0.1:5000/ajax.jpg"></img> */}
-         
 
-</div>
+          <div
+            style={{ display: "block", flexWrap: "wrap", alignItems: "center" }}
+          >
+            <div
+              className="sayt"
+              style={{
+                display: "block",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
+            >
+              <h1 onClick={showVideoHandler} className="heading">
+                Ovde možete prikazati video
+              </h1>
+              {showVideo && <YouTube videoId={urlAdresa} />}
+            </div>
 
+            <div
+              className="probni"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              {Array.isArray(sadrzajFoldera) &&
+                sadrzajFoldera.map((element, index) => (
+                  <div
+                    className="proba"
+                    key={index}
+                    style={{ width: "200px", height: "200px", margin: "10px" }}
+                  >
+                    {/* Ovde možete raditi sa svakim elementom niza */}
 
-<div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-   
- <h1  onClick={showVideoHandler} className="heading">Ovde možete prikazati video</h1>
-    {showVideo && (<YouTube videoId={urlAdresa}  />) }
-    
-
-         
-
-{Array.isArray(sadrzajFoldera) && sadrzajFoldera.map((element, index) => (
-  <div key={index}>
-    {/* Ovde možete raditi sa svakim elementom niza */}
-    <p>{element}</p> {/* Primer: Prikazuje svaki element niza kao paragraf */}
-    {/* Dodajte ovde dodatnu logiku za prikaz slike ili linka na osnovu ekstenzije */}
-    {element.endsWith('.jpg') || element.endsWith('.jpeg') || element.endsWith('.png') || element.endsWith('.gif') ?
-      <img src={`http://127.0.0.1:5000/${element}`} alt={`Slika ${index}`} />
-    : element.endsWith('.pdf') ?
-      // Prikaži link za preuzimanje PDF-a
-      <div className="folderContainer"  onClick={() => window.location.replace(`http://127.0.0.1:5000/${element}`)}>
-        <FolderIcon /> {element}  
-      </div>
-    :
-      <p>Nepoznata ekstenzija: {element.split('.').pop().toLowerCase()}</p>
-    }
-  </div>
-))}
-
-
-
+                    {/* Dodajte ovde dodatnu logiku za prikaz slike ili linka na osnovu ekstenzije */}
+                    {element.endsWith(".jpg") ||
+                    element.endsWith(".jpeg") ||
+                    element.endsWith(".png") ||
+                    element.endsWith(".gif") ? (
+                      <a
+                        href={`http://127.0.0.1:5000/${element}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <img
+                          src={`http://127.0.0.1:5000/${element}`}
+                          alt={`Slika ${index}`}
+                          style={{
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        />
+                      </a>
+                    ) : element.endsWith(".pdf") ? (
+                      // Prikaži link za preuzimanje PDF-a
+                      <a
+                        href={`http://127.0.0.1:5000/${element}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <div
+                          className="folderContainer"
+                          style={{
+                            width: "200px",
+                            height: "200px",
+                            margin: "10px",
+                          }}
+                        >
+                          <FolderIcon /> {element}
+                        </div>
+                      </a>
+                    ) : (
+                      <p>
+                        Nepoznata ekstenzija:{" "}
+                        {element.split(".").pop().toLowerCase()}
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       </Box>

@@ -164,12 +164,7 @@ const DropDown = ({
   return (
     <Box sx={{ minHeight: 270, flexGrow: 1, maxWidth: 300 }}>
       <Box sx={{ mb: 1 }}>
-        <Button onClick={handleExpandClick}>
-          {expanded.length === 0 ? "Expand all" : "Collapse all"}
-        </Button>
-        <Button onClick={handleSelectClick}>
-          {selected.length === 0 ? "Select all" : "Unselect all"}
-        </Button>
+       
       </Box>
       <TreeView
         aria-label="controlled"
