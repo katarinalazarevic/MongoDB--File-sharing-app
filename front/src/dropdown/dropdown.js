@@ -16,6 +16,7 @@ const DropDown = ({
   pronadjiImeRoditelja,
   vratiSadrzajFoldera,
   setShowDivVideo,
+  setIsShown
 }) => {
   const ucitaniKorisnik = localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
@@ -111,6 +112,7 @@ const DropDown = ({
     // console.log("postavio sam vrednost za div na false");
 
     setSelected(nodeId);
+    setIsShown(true);
     //createFolderHandler(nodeId);
 
     pronadjiImeRoditelja(nodeId);

@@ -56,12 +56,87 @@ const DrawerComponent = () => {
   const [showDodavanjePesme, setShowDodavanjePesme] = useState(false);
   const [urlNovePesme, setUrlNovePesme] = useState("");
   const [playlistName, setPlaylistName] = useState("");
-
   const [showDivVideo, setShowDivVideo] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [isShown, setIsShown]= useState(false);
+
+  // const [postaviTrenutnoImeFoldera, setPostaviTrenutnoImeFoldera]= useState('');
+
+  const handlePreuzmi = (element) => {
+    console.log(element);
+
+    axios.get(`http://127.0.0.1:5000/DownloadSliku/${element}`, {
+      responseType: 'blob', // Postavljanje tipa odgovora na blob (binarni podaci)
+    })
+    .then(response => {
+      // Kreiranje URL-a za preuzimanje binarnih podataka
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      
+      // Kreiranje linka za preuzimanje
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', element); // Postavljanje naziva fajla za preuzimanje
+      document.body.appendChild(link);
+      link.click();
+    })
+    .catch(error => {
+      console.error('Greška prilikom preuzimanja slike:', error);
+    });
+
+
+
+  };
+
+  // const handleImageClick = () => {
+  //   setShowOptions(true);
+  // };
+
+  const handleDelete = async (element) => {
+    // Logika za brisanje slike
+    console.log(element);
+    try {
+      const response = await axios.delete("http://127.0.0.1:5000/ObrisiSliku", {
+        data: {
+          email: ulogovaniKorisnik,
+          folder: ImeRoditelja,
+          fajl: element,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        window.confirm("Uspesno obrisan fajl :", element);
+      }
+    } catch (error) {
+      console.error("greska je", error);
+    }
+  };
+
+  const handleShow = (element) => {
+    // Logika za prikazivanje slike (možete implementirati zoom funkcionalnost)
+    console.log(element);
+    setShowOptions(false);
+  };
+
+  // const handleItemClick = (element) => {
+  //   setSelectedElement(element);
+  //   setShowOptions(true);
+  // };
 
   const headingStyle = {
     fontFamily: "Roboto, sans-serif",
   };
+
+  const toggleDiv = (vrednost) => {
+    setShowDivVideo(vrednost);
+  };
+
+  const postaviUvekNaTrue = () => {
+    setShowDivVideo(true);
+  };
+
   const showVideoHandler = () => {
     setShowVideo(!showVideo);
   };
@@ -352,7 +427,7 @@ const DrawerComponent = () => {
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            Permanent drawer
+            File sharing application 
           </Typography>
         </Toolbar>
       </AppBar>
@@ -389,11 +464,13 @@ const DrawerComponent = () => {
             postaviNazivPlaylisteGdeDodajemoPesmu={
               postaviNazivPlaylisteGdeDodajemoPesmu
             }
+            toggleDiv={toggleDiv}
+            postaviUvekNaTrue={postaviUvekNaTrue}
           ></DropDownPlaylist>
         </List>
         <Divider />
         <List>
-            <p style={{marginLeft:'80px', size:'25'}}> Folderi</p>
+          <p style={{ marginLeft: "80px", size: "25" }}> Folderi</p>
           <ListItem disablePadding>
             <DropMenu
               procitajMojuDecu={procitajMojuDecu}
@@ -401,6 +478,7 @@ const DrawerComponent = () => {
               pronadjiImeRoditelja={pronadjiImeRoditelja}
               vratiSadrzajFoldera={vratiSadrzajFoldera}
               setShowDivVideo={setShowDivVideo}
+              setIsShown={setIsShown}
             />
           </ListItem>
         </List>
@@ -432,7 +510,13 @@ const DrawerComponent = () => {
           </div>
           <div style={{}} className="DivKojiseuvekprikazuje">
             <div
-              style={{ display: "flex", flexWrap: "wrap", marginTop: "15px" }}
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                marginTop: "15px",
+                borderBottom: "2px solid",
+                height: "120px",
+              }}
             >
               {/* <PlayListDialog createPlaylistHandler={createPlaylistHandler}>
               {" "}
@@ -481,84 +565,114 @@ const DrawerComponent = () => {
           <div
             style={{ display: "block", flexWrap: "wrap", alignItems: "center" }}
           >
-            <div
-              className="sayt"
-              style={{
-                display: "block",
-                justifyContent: "center",
-                textAlign: "center",
-              }}
-            >
-              <h1 onClick={showVideoHandler} className="heading">
-                Ovde možete prikazati video
-              </h1>
-              {showVideo && <YouTube videoId={urlAdresa} />}
-            </div>
-
+            {showDivVideo && (
+              <div
+                className="sayt"
+                style={{
+                  display: "block",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <h1
+                    style={{ marginRight: "50px" }}
+                    onClick={showVideoHandler}
+                    className="heading"
+                  >
+                    Ovde možete prikazati video
+                  </h1>
+                  <Button
+                    variant="contained"
+                    style={{ height: "50px", marginTop: "25px" }}
+                    onClick={() => toggleDiv(false)}
+                  >
+                    Ugasi video player{" "}
+                  </Button>
+                </div>
+                {showVideo && <YouTube videoId={urlAdresa} />}
+              </div>
+            )}
             <div
               className="probni"
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                alignItems: "center",
-              }}
+              style={{ display: "flex", flexDirection: "column" }}
             >
-              {Array.isArray(sadrzajFoldera) &&
-                sadrzajFoldera.map((element, index) => (
-                  <div
-                    className="proba"
-                    key={index}
-                    style={{ width: "200px", height: "200px", margin: "10px" }}
-                  >
-                    {/* Ovde možete raditi sa svakim elementom niza */}
-
-                    {/* Dodajte ovde dodatnu logiku za prikaz slike ili linka na osnovu ekstenzije */}
-                    {element.endsWith(".jpg") ||
-                    element.endsWith(".jpeg") ||
-                    element.endsWith(".png") ||
-                    element.endsWith(".gif") ? (
-                      <a
-                        href={`http://127.0.0.1:5000/${element}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <img
-                          src={`http://127.0.0.1:5000/${element}`}
-                          alt={`Slika ${index}`}
-                          style={{
-                            objectFit: "cover",
-                            width: "100%",
-                            height: "100%",
-                          }}
-                        />
-                      </a>
-                    ) : element.endsWith(".pdf") ? (
-                      // Prikaži link za preuzimanje PDF-a
-                      <a
-                        href={`http://127.0.0.1:5000/${element}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <div
-                          className="folderContainer"
-                          style={{
-                            width: "200px",
-                            height: "200px",
-                            margin: "10px",
-                          }}
-                        >
-                          <FolderIcon /> {element}
+               {isShown &&(<div  >
+                <h1>Sadržaj foldera:</h1>
+              </div>)}
+              <div
+                className="probni"
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                }}
+              >
+                {Array.isArray(sadrzajFoldera) &&
+                  sadrzajFoldera.map((element, index) => (
+                    <div
+                      className="proba"
+                      key={index}
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        width: "200px",
+                        height: "200px",
+                        margin: "10px",
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div className="imageContainer">
+                        {/* Dodajte ovde dodatnu logiku za prikaz slike ili linka na osnovu ekstenzije */}
+                        {element.endsWith(".jpg") ||
+                        element.endsWith(".jpeg") ||
+                        element.endsWith(".png") ||
+                        element.endsWith(".gif") ? (
+                          <img
+                            src={`http://127.0.0.1:5000/${element}`}
+                            alt={`Slika ${index}`}
+                            className="image"
+                          />
+                        ) : element.endsWith(".pdf") ? (
+                          // Prikaži link za preuzimanje PDF-a
+                          <div className="folderContainer">
+                            <FolderIcon /> {element}
+                          </div>
+                        ) : (
+                          <p>
+                            Nepoznata ekstenzija:{" "}
+                            {element.split(".").pop().toLowerCase()}
+                          </p>
+                        )}
+                        <div className="overlay">
+                          <a
+                            href={`http://127.0.0.1:5000/${element}`}
+                            className="showButton"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Prikaži
+                          </a>
+                          <button
+                            onClick={() => handlePreuzmi(element)}
+                            className="showButton"
+                          >
+                            Preuzmi
+                          </button>
+                          <button
+                            onClick={() => handleDelete(element)}
+                            className="deleteButton"
+                          >
+                            Obriši
+                          </button>
                         </div>
-                      </a>
-                    ) : (
-                      <p>
-                        Nepoznata ekstenzija:{" "}
-                        {element.split(".").pop().toLowerCase()}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
+            
           </div>
         </div>
       </Box>

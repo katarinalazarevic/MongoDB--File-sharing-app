@@ -13,6 +13,9 @@ import PlayListDialog from "../PlayListaDialog/PlayListaDialog";
 const DropDownPlaylist = ({
   seturlAdresa,
   postaviNazivPlaylisteGdeDodajemoPesmu,
+  toggleDiv,
+  postaviUvekNaTrue
+  
 }) => {
   const ucitaniKorisnik = localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
@@ -45,6 +48,9 @@ const DropDownPlaylist = ({
   const clickHandler = (imePlayListe) => {
     console.log("kliknuio sam na ", imePlayListe);
     postaviNazivPlaylisteGdeDodajemoPesmu(imePlayListe);
+    
+    toggleDiv(true);
+   
     //let id = extractVideoId(urlAdresa);
     //console.log("postavljam  ", id);
     //seturlAdresa(id);
@@ -160,6 +166,10 @@ const DropDownPlaylist = ({
 
   const handleSelect = (event, nodeId) => {
     setSelected(nodeId);
+   // console.log(" postavljam vrednost za showVideo", showVideo );
+    
+    postaviUvekNaTrue();
+   // setShowDivVideo(!showVideo);
     // console.log(event.target.textContent);
     const idVidea = extractVideoId(event.target.textContent);
     console.log(idVidea);
