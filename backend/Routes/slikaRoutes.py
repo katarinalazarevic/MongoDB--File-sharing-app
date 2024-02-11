@@ -50,13 +50,7 @@ def UploadSliku():
         print(file_path)
         file.save(file_path)
 
-        # image = Image(
-        #     imeFajla=filename,
-        #     sadrzaj=file_path,  # Čuvanje putanje do fajla umesto samog sadržaja
-        #     vlasnik=email
-        # )
-
-        # image_id = mongo_db.files.insert_one(image.to_dict()).inserted_id
+        
         mongo_db.foldersf.update_one(
                 {'naziv': folder},
                 {'$push': {'files': filename}}

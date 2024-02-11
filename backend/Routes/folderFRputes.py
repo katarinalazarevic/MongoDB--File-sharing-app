@@ -21,7 +21,7 @@ def NapraviFolder():
             mongo_db.foldersf.insert_one({
             'naziv': naziv,
             "roditelj": 'null',
-          #  "datumKreiranja": datetime.utcnow(),  # Ispravno pozivajte utcnow() iz datetime objekta
+          #  "datumKreiranja": datetime.utcnow(), 
             "files": [file for file in noviFolder.files],
         })
         else:
@@ -33,51 +33,14 @@ def NapraviFolder():
             mongo_db.foldersf.insert_one({
                 'naziv': naziv,
                 "roditelj": postojeci.get('naziv'),
-            #  "datumKreiranja": datetime.utcnow(),  # Ispravno pozivajte utcnow() iz datetime objekta
+            #  "datumKreiranja": datetime.utcnow(),  
                 "files": [file for file in noviFolder.files],
             })
             return jsonify({'message': 'SUCCESS'}), 201
         return jsonify({'message': 'SUCCESS'}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
-    # try:
-    #     data=request.get_json()
-    #     roditelj=data['roditelj'] #naziv roditeljskog foldera
-    #     naziv=data['naziv']
-    #     roditelj=data['vlasnik'] #emial korisnika
-    #     postojeci = mongo_db.users.find_one({'email': vlasnik})
-    #     if not postojeci:
-    #         return jsonify({'message': 'Korisnik ne postoji'}), 400
-    #     sfolder=mongo_db.foldersf.find_one({'naziv':naziv})
-    #     if sfolder:
-    #         return jsonify({'message': 'Folder sa datim nazivom vec postoji'}), 400
-
-    #     noviFolder=Folder(naziv,vlasnik)
-    #     mongo_db.foldersf.insert_one({
-    #         'naziv':noviFolder.naziv,
-    #         "vlasnik": noviFolder.vlasnik,
-    #         "datumKreiranja": noviFolder.datumKreiranja,
-    #         "files": [file for file in noviFolder.files],
-    #         "subfolders": [subfolder for subfolder in noviFolder.subfolders]
-       
-    #     })
-    #     if roditelj == '#':
-    # # Ovdje ide kod koji se izvršava ako je roditelj "#"
-    #      return jsonify({'message': 'SUCCESS'}), 201
-    #     else: 
-    #         # Ovdje ide kod koji se izvršava ako roditelj nije "#"
-    #         rfolder = mongo_db.foldersf.find_one({'naziv': roditelj})
-    #         if rfolder:
-    #             mongo_db.foldersf.update_one(
-    #                 {'naziv': roditelj},
-    #                 {'$push': {'subfolders': noviFolder.naziv}}
-    #             )
-    #             return jsonify({'message': 'SUCCESS'}), 201
-    #         else:
-    #             return jsonify({'message': 'Doslo je do greske sa roditeljskim folderom'}), 400
-
-
-    # except Exception as e:
+   
     #     return jsonify({'error': str(e)}), 500
 
 def proba(naziv):
@@ -106,26 +69,7 @@ def ProcitajSveFoldereZaKorisnika():
     naziv=data['naziv']    
     return proba(naziv)
 
-    rezultat = []
-
-    for folder in svi_folderi:
-        rezultat.append({
-            'naziv': folder['naziv'],
-            'subfolders': list(map(lambda x: x.get('naziv'), folder['subfolders']))
-        })
-    #print(rezultat)
-    return jsonify({'folders': rezultat})
-#     db.employees.aggregate( [
-#    {
-#       $graphLookup: {
-#          from: "employees",
-#          startWith: "$reportsTo",
-#          connectFromField: "reportsTo",
-#          connectToField: "name",
-#          as: "reportingHierarchy"
-#       }
-#    }
-# ] )
+    
 
 @folder_routes.route("/ProcitajSveFoldere", methods=['GET'])
 def ProcitajSveFoldere():
@@ -170,8 +114,7 @@ def ObrisiFolder(naziv_foldera):
                 # Brisanje podfoldera
                 mongo_db.foldersf.delete_one({'naziv': podfolder['naziv']})
 
-        # Brisanje samog foldera - premesteno ispod rekurzivnog poziva
-        # Poziv rekurzivne funkcije za brisanje podfoldera
+        
         obrisi_podfoldere(naziv_foldera)
 
         # Brisanje samog foldera
