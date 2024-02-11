@@ -17,7 +17,9 @@ const DropDown = ({
   vratiSadrzajFoldera,
   setShowDivVideo,
   setIsShown,
-  onSetTree
+  setTree,
+  tree,
+  procitajSveFoldereZaKorisnika
 
 }) => {
   const ucitaniKorisnik = localStorage.getItem("username");
@@ -26,10 +28,10 @@ const DropDown = ({
 
   const [treutnoImeFoldera, setTrenutnoimeFoldera] = React.useState("");
 
-  const [tree, setTree] = React.useState({
-    naziv: "Meni",
-    subfolders: [],
-  });
+  // const [tree, setTree] = React.useState({
+  //   naziv: "Meni",
+  //   subfolders: [],
+  // });
 
   useEffect(() => {
     //console.log(ucitaniKorisnik);
@@ -54,7 +56,7 @@ const DropDown = ({
       });
   }, [selected]);
 
-  
+
 
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);
@@ -98,6 +100,7 @@ const DropDown = ({
       );
 
       if (response.status === 200) {
+        procitajSveFoldereZaKorisnika();
         window.confirm(
           "Uspesno ste promeni ime  foldera: " + treutnoImeFoldera
         );
@@ -157,6 +160,7 @@ const DropDown = ({
             {p.naziv !== ucitaniKorisnik && (
               <FolderDialog
                 updateNameHandler={updateNameHandler}
+                procitajSveFoldereZaKorisnika={procitajSveFoldereZaKorisnika}
                 style={{ marginLeft: "5px" }}
               />
             )}

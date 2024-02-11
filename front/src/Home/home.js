@@ -59,7 +59,13 @@ const DrawerComponent = () => {
   const [showDivVideo, setShowDivVideo] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [isShown, setIsShown]= useState(false);
-  const [tree, setTree] = React.useState({});
+  //const [tree, setTree] = React.useState({});
+
+  const [tree, setTree] = React.useState({
+    naziv: "Meni",
+    subfolders: [],
+  });
+
 
   // const [postaviTrenutnoImeFoldera, setPostaviTrenutnoImeFoldera]= useState('');
 
@@ -178,7 +184,11 @@ const DrawerComponent = () => {
           // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
         },
       }
-    )
+    ).then((p) => {
+      //console.log(p);
+      setTree(p.data);
+     // onSetTree(p.data);
+    });
   };
 
   const kreirajPlayListu = async (nazivPlayliste) => {
@@ -513,7 +523,9 @@ const DrawerComponent = () => {
               vratiSadrzajFoldera={vratiSadrzajFoldera}
               setShowDivVideo={setShowDivVideo}
               setIsShown={setIsShown}
-              onSetTree={handleSetTree}
+              tree={tree}
+              setTree={setTree}
+              procitajSveFoldereZaKorisnika={procitajSveFoldereZaKorisnika}
             />
           </ListItem>
         </List>
