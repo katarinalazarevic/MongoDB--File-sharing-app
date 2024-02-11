@@ -14,13 +14,16 @@ const DropDownPlaylist = ({
   seturlAdresa,
   postaviNazivPlaylisteGdeDodajemoPesmu,
   toggleDiv,
-  postaviUvekNaTrue
+  postaviUvekNaTrue,
+  setTreePlaylist,
+  treePlaylist,
+  ucitajPlayListe
   
 }) => {
   const ucitaniKorisnik = localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
   const [selected, setSelected] = React.useState(0);
-  const [tree, setTree] = React.useState(null);
+  //const [tree, setTree] = React.useState(null);
   const ulogovaniKorisnik = localStorage.getItem("username");
 
   const [editMode, setEditMode] = useState(false);
@@ -38,7 +41,7 @@ const DropDownPlaylist = ({
         console.log(response.data);
         console.log("vrednsot za rsponse data je ", response.data);
 
-        setTree(response.data);
+        setTreePlaylist(response.data);
       })
       .catch((error) => {
         console.error("Error fetching playlists:", error);
@@ -84,7 +87,8 @@ const DropDownPlaylist = ({
       });
 
       if (response.status === 200) {
-        window.confirm(response.message);
+        window.confirm("Uspesno ste obrisali pesmu");
+        ucitajPlayListe();
       } else {
         window.confirm("Neuspesno brisanje!");
       }
@@ -113,6 +117,9 @@ const DropDownPlaylist = ({
       );
 
       if (response.status === 200) {
+        ucitajPlayListe();
+
+
         window.confirm("Uspesno ste update playlistu: " + staroIme);
       } else {
         window.confirm("Neuspesno brisanje!");
@@ -145,6 +152,8 @@ const DropDownPlaylist = ({
 
       if (response.status === 200) {
         window.confirm("Uspesno ste obrisali playlistu: " + imeplayliste);
+        ucitajPlayListe();
+
       } else {
         window.confirm("Neuspesno brisanje!");
       }
@@ -185,19 +194,17 @@ const DropDownPlaylist = ({
           key={playlist._id}
           nodeId={playlist._id}
           label={
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width:'300px' }}>
+            <span>{`Playlista: ${playlist.naziv}`}</span>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <span>{`Playlista: ${playlist.naziv}`}</span>
-              <DeleteIcon
-                onClick={(event) => handleDeletePlaylist(event, playlist.naziv)}
-              />
-              {/* <CreateIcon onClick={(event) => handleUpdatePlayList(event, playlist.naziv)} >   </CreateIcon> */}
               <PlayListDialog
                 playlistNameprop={playlist.naziv}
-                handleUpdatePlayListName={(a, b, c) =>
-                  handleUpdatePlayListName(a, b, c)
-                }
+                handleUpdatePlayListName={(a, b, c) => handleUpdatePlayListName(a, b, c)}
               />
+              <DeleteIcon style={{ marginLeft: "10px" }} onClick={(event) => handleDeletePlaylist(event, playlist.naziv)} />
             </div>
+          </div>
+          
           }
           onClick={() => clickHandler(playlist.naziv)}
         >
@@ -206,10 +213,11 @@ const DropDownPlaylist = ({
               key={index}
               nodeId={`${playlist._id}-${index}`}
               label={
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span>{pesma}</span>
-                  <DeleteIcon onClick={() => handleDeletePesma(pesma, index)} />
-                </div>
+                <div style={{ display: "flex", alignItems: "center" , borderBottom:'0.5px solid black', borderTop:'0.5px solid black'}}>
+                <span style={{ maxWidth: "250px", wordWrap: "break-word" }}>{pesma}</span>
+                <DeleteIcon onClick={() => handleDeletePesma(pesma, index)} />
+              </div>
+              
               }
             />
           ))}
@@ -240,7 +248,7 @@ const DropDownPlaylist = ({
         onNodeToggle={handleToggle}
         onNodeSelect={handleSelect}
       >
-        {getTreeLeaf(tree)}
+        {getTreeLeaf(treePlaylist)}
       </TreeView>
 
       {editMode && (

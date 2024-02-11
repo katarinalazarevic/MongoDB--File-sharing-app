@@ -40,7 +40,7 @@ def UploadPesmu():
                                    {'$push': {'pesme': url}})
     muzika_id = mongo_db.pesma.insert_one(muzika.to_dict()).inserted_id
 
-    return jsonify({'message': 'YouTube audio added successfully', 'muzika_id': str(muzika_id)})
+    return jsonify({'message': 'YouTube audio added successfully', 'muzika_id': str(muzika_id)}), 201
 
 
 @pesma_routes.route("/VratiPesmePleyliste",methods=['POST'])

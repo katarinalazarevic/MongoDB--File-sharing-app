@@ -72,7 +72,9 @@ const DropDown = ({
       });
     
       if (response.status === 200) {
-        window.confirm("Uspesno ste obrisali folder: " + treutnoImeFoldera);
+        procitajSveFoldereZaKorisnika();
+        window.confirm("Uspesno ste obrisali folder: " );
+
       } else {
         window.confirm("Neuspesno brisanje !");
       }
@@ -151,19 +153,19 @@ const DropDown = ({
           <div style={{ display: "flex", alignItems: "center" }}>
             <span>{p.naziv}</span> {/* Naziv */}
             {p.naziv !== ucitaniKorisnik && (
+              <FolderDialog
+                updateNameHandler={updateNameHandler}
+                procitajSveFoldereZaKorisnika={procitajSveFoldereZaKorisnika}
+                style={{ marginLeft: "auto" }}
+              />
+            )}
+            {p.naziv !== ucitaniKorisnik && (
               <DeleteIcon
                 onClick={() => deleteHandler(p.naziv)}
                 style={{ marginLeft: "auto" }}
               />
             )}
             {/* DeleteIcon, prikaži samo ako nije ulogovani korisnik */}
-            {p.naziv !== ucitaniKorisnik && (
-              <FolderDialog
-                updateNameHandler={updateNameHandler}
-                procitajSveFoldereZaKorisnika={procitajSveFoldereZaKorisnika}
-                style={{ marginLeft: "5px" }}
-              />
-            )}
           </div>
         }
       >

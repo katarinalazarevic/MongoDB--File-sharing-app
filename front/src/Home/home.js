@@ -59,6 +59,8 @@ const DrawerComponent = () => {
   const [showDivVideo, setShowDivVideo] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [isShown, setIsShown]= useState(false);
+
+  const [treePlaylist, setTreePlaylist] = React.useState(null);
   //const [tree, setTree] = React.useState({});
 
   const [tree, setTree] = React.useState({
@@ -75,6 +77,25 @@ const DrawerComponent = () => {
     setTree(newTree);
   };
 
+  const ucitajPlayListe= async ()=>
+  {
+    axios
+    .get(`http://127.0.0.1:5000/vratiPlayliste/${ulogovaniKorisnik}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      console.log("vrednsot za rsponse data je ", response.data);
+
+      setTreePlaylist(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching playlists:", error);
+    });
+
+  };
 
 
 
@@ -211,6 +232,9 @@ const DrawerComponent = () => {
 
       if (response.status === 201) {
         if (response.data.message === "SUCCESS") {
+          //OVDE CEMO DA POZOVEMO setTreePlaylist
+          ucitajPlayListe();
+
           console.log("Uspesno dodata playlista:", response.data.message);
         } else {
           console.log("Neuspesno dodat folder:", response.data.message);
@@ -250,12 +274,14 @@ const DrawerComponent = () => {
       console.log("Server Response:", response.data);
 
       if (response.status === 201) {
-        if (response.data.message === "Image uploaded successfully") {
+        
+        window.confirm("Uspesno dodata pesma u playlisti!");
+
+        ucitajPlayListe();
+          
+
           console.log("Uspesno dodat folder:", response.data.message);
-        } else {
-          console.log("Neuspesno dodat folder:", response.data.message);
-          // Možete dodati dodatnu logiku za neuspeh, na primer, prikazivanje poruke korisniku
-        }
+        
       } else {
         console.log("Neuspešna prijava! Status kod nije 201.");
         // Možete dodati dodatnu logiku za neuspeh, na primer, prikazivanje poruke korisniku
@@ -510,6 +536,10 @@ const DrawerComponent = () => {
             }
             toggleDiv={toggleDiv}
             postaviUvekNaTrue={postaviUvekNaTrue}
+            setTreePlaylist={setTreePlaylist}
+            treePlaylist={treePlaylist}
+            ucitajPlayListe={ucitajPlayListe}
+
           ></DropDownPlaylist>
         </List>
         <Divider />
