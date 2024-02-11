@@ -96,7 +96,7 @@ def ObrisiSliku():
 
     mongo_db.files.delete_one({'imeFajla': filename, 'vlasnik': email})
 
-    return jsonify({'message': 'File deleted successfully'})
+    return jsonify({'message': 'File deleted successfully'}),200
 
 @slika_routes.route("/VratiFajloveZaFolder", methods=['GET'])
 def VratiFajloveZaFolder():
@@ -114,3 +114,9 @@ def VratiFajloveZaFolder():
 @slika_routes.route("/probaj")
 def probaj():
      return ("Hello"),200
+
+from flask import send_from_directory
+
+@slika_routes.route("/DownloadSliku/<path:filename>", methods=['GET'])
+def DownloadSliku(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)

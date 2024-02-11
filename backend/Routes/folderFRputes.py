@@ -158,7 +158,22 @@ def ObrisiFolder(naziv_foldera):
             return jsonify({'message': 'Folder ne postoji'}), 404
         
         # Pozivanje rekurzivne funkcije za brisanje podfoldera
-        
+        def obrisi_podfoldere(naziv_foldera):
+            # Pronalaženje podfoldera koji imaju roditelja 'naziv_foldera'
+            podfolderi = mongo_db.foldersf.find({'rodjitelj': naziv_foldera})
+            print(podfolderi)
+            # Brisanje podfoldera
+            for podfolder in podfolderi:
+                print("usao")
+                # Rekurzivno pozivanje funkcije za brisanje podfoldera
+                obrisi_podfoldere(podfolder['naziv'])
+                # Brisanje podfoldera
+                mongo_db.foldersf.delete_one({'naziv': podfolder['naziv']})
+
+        # Brisanje samog foldera - premesteno ispod rekurzivnog poziva
+        # Poziv rekurzivne funkcije za brisanje podfoldera
+        obrisi_podfoldere(naziv_foldera)
+
         # Brisanje samog foldera
         mongo_db.foldersf.delete_one({'naziv': naziv_foldera})
 
