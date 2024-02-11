@@ -59,8 +59,18 @@ const DrawerComponent = () => {
   const [showDivVideo, setShowDivVideo] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [isShown, setIsShown]= useState(false);
+  const [tree, setTree] = React.useState({});
 
   // const [postaviTrenutnoImeFoldera, setPostaviTrenutnoImeFoldera]= useState('');
+
+
+  // Callback funkcija koja će postaviti novu vrednost tree
+  const handleSetTree = (newTree) => {
+    setTree(newTree);
+  };
+
+
+
 
   const handlePreuzmi = (element) => {
     console.log(element);
@@ -87,9 +97,7 @@ const DrawerComponent = () => {
 
   };
 
-  // const handleImageClick = () => {
-  //   setShowOptions(true);
-  // };
+
 
   const handleDelete = async (element) => {
     // Logika za brisanje slike
@@ -107,6 +115,7 @@ const DrawerComponent = () => {
       });
 
       if (response.status === 200) {
+        vratiSadrzajFoldera(ImeRoditelja);
         window.confirm("Uspesno obrisan fajl :", element);
       }
     } catch (error) {
@@ -144,12 +153,32 @@ const DrawerComponent = () => {
     console.log(imeDeteta);
     // napraviFolder
     napraviFolder(ImeRoditelja, imeDeteta);
+   
   };
 
   const createPlaylistHandler = async (nazivPlayliste) => {
     console.log(nazivPlayliste);
 
     kreirajPlayListu(nazivPlayliste1);
+  };
+
+  const procitajSveFoldereZaKorisnika= async ()=>
+  {
+
+    axios
+    .post(
+      "http://127.0.0.1:5000/ProcitajSveFoldereZaKorisnika",
+      {
+        naziv: ulogovaniKorisnik,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          // Dodajte dodatne zaglavlja ovde ako je potrebno
+          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
+        },
+      }
+    )
   };
 
   const kreirajPlayListu = async (nazivPlayliste) => {
@@ -311,6 +340,8 @@ const DrawerComponent = () => {
 
       if (response.status === 201) {
         if (response.data.message === "Image uploaded successfully") {
+          vratiSadrzajFoldera(ImeRoditelja);
+
           console.log("Uspesno dodat folder:", response.data.message);
         } else {
           console.log("Neuspesno dodat folder:", response.data.message);
@@ -350,6 +381,9 @@ const DrawerComponent = () => {
 
       if (response.status === 201) {
         if (response.data.message === "SUCCESS") {
+
+          
+          procitajSveFoldereZaKorisnika();
           console.log("Uspesno dodat folder:", response.data.message);
           window.confirm("Uspesno dodat folder!");
           // navigate("/");
@@ -479,6 +513,7 @@ const DrawerComponent = () => {
               vratiSadrzajFoldera={vratiSadrzajFoldera}
               setShowDivVideo={setShowDivVideo}
               setIsShown={setIsShown}
+              onSetTree={handleSetTree}
             />
           </ListItem>
         </List>
@@ -490,7 +525,8 @@ const DrawerComponent = () => {
         <Toolbar />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div className="divUploadFile">
-            <FormDialog createFolderHandler={createFolderHandler}> </FormDialog>
+            <FormDialog createFolderHandler={createFolderHandler} >
+               </FormDialog>
 
             <Button
               variant="contained"

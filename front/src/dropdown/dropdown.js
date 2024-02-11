@@ -16,7 +16,9 @@ const DropDown = ({
   pronadjiImeRoditelja,
   vratiSadrzajFoldera,
   setShowDivVideo,
-  setIsShown
+  setIsShown,
+  onSetTree
+
 }) => {
   const ucitaniKorisnik = localStorage.getItem("username");
   const [expanded, setExpanded] = React.useState([]);
@@ -48,8 +50,11 @@ const DropDown = ({
       .then((p) => {
         //console.log(p);
         setTree(p.data);
+       // onSetTree(p.data);
       });
   }, [selected]);
+
+  
 
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);
